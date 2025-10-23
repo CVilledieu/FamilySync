@@ -1,4 +1,4 @@
-package ApiServer
+package api
 
 import (
 	"net/http"
@@ -6,11 +6,11 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func indexHandler(c echo.Context) error {
+func IndexHandler(c echo.Context) error {
 	return c.Render(http.StatusOK, "index", nil)
 }
 
-func scheduleHandler(c echo.Context) error {
+func ScheduleHandler(c echo.Context) error {
 	schedule := map[string]interface{}{
 		"Mom": []map[string]string{
 			{"Monday": "09:00 AM", "event": "Opening Ceremony"},
