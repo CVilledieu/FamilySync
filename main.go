@@ -32,7 +32,7 @@ func main() {
 	e.Static("/static", "public/static")
 
 	e.GET("/", Api.IndexHandler)
-	e.GET("/members", Api.MembersHandler)
+	e.GET("/member", Api.MembersHandler)
 	e.GET("/schedule", Api.ScheduleHandler)
 	e.Logger.Fatal(e.Start(PORT))
 }
