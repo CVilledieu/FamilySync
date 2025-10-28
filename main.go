@@ -57,10 +57,10 @@ func pageIndex(c echo.Context) error {
 func main() {
 	e := echo.New()
 	e.Renderer = newTemplate()
-	e.Static("/static", "public/static")
+	e.Static("/static", "./public")
 
 	e.GET("/", pageIndex)
-	e.GET("/member", getNames)
+	e.GET("/names", getNames)
 	e.GET("/schedule", getSchedule)
 	e.Logger.Fatal(e.Start(PORT))
 }

@@ -1,4 +1,5 @@
-import { createDropdownMenu } from './elements.js';
+import { createDropdownMenu } from '/static/app/elements.js';
+
 
 class App {
     constructor() {
@@ -8,7 +9,7 @@ class App {
 
     async init(){
         try {
-            const names = await fetch('/member').then(res => res.json());
+            const names = await fetch('/names').then(res => res.json());
             this.buildHeader(names);
         } catch (error) {
             console.error('Initialization error:', error);
@@ -27,7 +28,7 @@ class App {
         return header;
     }
 
-    
+
 
 }
 
