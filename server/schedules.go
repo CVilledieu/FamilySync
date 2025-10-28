@@ -1,42 +1,17 @@
 package api
 
-import (
-	"net/http"
-
-	"github.com/labstack/echo/v4"
-)
-
-func IndexHandler(c echo.Context) error {
-	return c.Render(http.StatusOK, "index", nil)
+type Event struct {
+	Time  string
+	Title string
+	Desc  string
 }
 
-func ScheduleHandler(c echo.Context) error {
-	schedule := map[string]interface{}{
-		"Mom": []map[string]string{
-			{"Monday": "09:00 AM", "event": "Opening Ceremony"},
-			{"Tuesday": "10:00 AM", "event": "Keynote Speech"},
-		},
-		"Summary": map[string]int{
-			"total_events": 2,
-			"total_days":   2,
-		},
-	}
-	return c.JSON(http.StatusOK, schedule)
-}
-
-type Schedule struct {
-	Id       string
-	Calendar []Week
-}
-
-type Week [7]Day
-
-type Day struct {
-	Name   string
+type Epoch struct {
+	Date   string
 	Events []Event
 }
 
-type Event struct {
-	Title string
-	Time  string
+type Calendar struct {
+	Name   string
+	Epochs []Epoch
 }
