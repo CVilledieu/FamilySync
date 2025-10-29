@@ -1,0 +1,6 @@
+.cell{
+    border: 10px solid #000000;
+    width: 100px;
+    height: 100px;
+    background-color: rgb(94, 94, 94);
+}

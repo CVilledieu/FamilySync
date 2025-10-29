@@ -1,5 +1,5 @@
-import { createDropdownMenu } from '/static/app/elements.js';
-
+import { DropdownMenu} from '/static/app/elements.js';
+import { Calendar } from '/static/app/calendar.js';
 
 class App {
     constructor() {
@@ -10,25 +10,27 @@ class App {
     async init(){
         try {
             const names = await fetch('/names').then(res => res.json());
-            this.buildHeader(names);
+            this.buildIndex(names);
         } catch (error) {
             console.error('Initialization error:', error);
         }
     }
 
-    buildHeader(names){
+    buildIndex(names){
         const header = document.createElement('header');
         const title = document.createElement('h1');
-        title.textContent = 'Member Directory';
-        header.appendChild(title);
-        const dropdown = createDropdownMenu('Select Member', names);
-        header.appendChild(dropdown);
-        this.appRoot.appendChild(header);
         
-        return header;
+        title.textContent = 'Family Sync';
+        header.appendChild(title);
+        
+        const dropdown = DropdownMenu('View schedule for ', names);
+        header.appendChild(dropdown);
+
+        this.appRoot.appendChild(header);
+
+        const calendar = Calendar();
+        this.appRoot.appendChild(calendar);
     }
-
-
 
 }
 
