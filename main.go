@@ -42,10 +42,8 @@ func getSchedule(c echo.Context) error {
 
 func getNames(c echo.Context) error {
 	members := []string{
-		"Alice",
-		"Bob",
-		"Charlie",
-		"Diana",
+		"Dad",
+		"Mom",
 	}
 	return c.JSON(http.StatusOK, members)
 }
