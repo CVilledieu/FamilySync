@@ -1,6 +1,43 @@
-.cell{
-    border: 10px solid #000000;
-    width: 100px;
-    height: 100px;
-    background-color: rgb(94, 94, 94);
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
 }
+
+#root {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.calendar{
+    display: flex;
+    flex-direction: column;
+    height: 80%;
+
+}
+
+.calendar-grid {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    min-width: 100%;
+    height: 20%;
+    justify-content: space-around;
+}
+
+.cell{
+    border: 1.5px solid #000000;
+    width: 10%;
+    height: 80%;
+    
+}
+

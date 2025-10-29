@@ -20,31 +20,33 @@ export const Calendar =()=> {
 
 
 const createGrid =()=> {
-    const gridClassName = 'calendar-grid';
     const grid = document.createElement('div');
-    grid.className = gridClassName;
+    grid.className = 'calendar-grid';
+
     var rows = cRows;
     var columns = cColumns;
+    
     for(let r=0; r < rows; r++){
+
+        const row = document.createElement('div');
+        row.classList.add('row');
+        row.id = 'row-' + r;
+
         for(let c=0; c < columns; c++){
-            const cell = createCell({row: 'row-' + r, column: 'column-' + c});
-            grid.appendChild(cell);
+            const cell = createCell();
+            row.appendChild(cell);
         }
+
+        grid.appendChild(row);
     }
 
     return grid;
 }
 
 
-const createCell = (options = {}) =>{
-    const {
-        row, 
-        column
-    } = options;
+const createCell = () =>{
     const cell = document.createElement('div');
     cell.classList.add('cell');
-    cell.classList.add(row);
-    cell.classList.add(column);
     return cell;
 }
 
