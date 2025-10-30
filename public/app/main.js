@@ -8,6 +8,8 @@ class App {
         this.init();
     }
 
+    // 
+    //
     async init() {
         try {
             const names = await fetch('/names').then(res => res.json());
@@ -15,7 +17,7 @@ class App {
             this.buildCalendar();
         } catch (error) {
             console.error('Initialization error:', error);
-            //Error handling plan:
+            //Error handling plan/options:
             // Display a user-friendly message
             // Possibly retry fetching
             // Display empty calendar or cached data
@@ -42,14 +44,14 @@ class App {
             this.appRoot.appendChild(header);
         } catch (error){
             console.error('Error building header:', error);
-            throw error; // Re-throw to be caught by the main try-catch
+            throw error;
         }
 
     }
 
     buildCalendar() {
         try {
-            // Calendar creation
+            
             const calendar = Calendar();
             this.appRoot.appendChild(calendar);
             
@@ -57,12 +59,11 @@ class App {
             
         } catch (error) {
             console.error('Error in buildCalendar:', error);
-            throw error; // Re-throw to be caught by the main try-catch
+            throw error;
         }
     }
     
-    updateCalendarForPerson(personName) {
-        
+    updateCalendarHeader(personName) {
         const title = document.querySelector('header h1');
         if (personName) {
             title.textContent = `${personName}'s Schedule`;
