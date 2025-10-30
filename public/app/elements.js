@@ -30,7 +30,7 @@ export const DropdownMenu = (Title, Options, id) => {
     return container;
 }
 
-export class DropdownMenu_class{
+export class Dropdown{
     constructor(options = {}) {
         const {
             title = '',
@@ -63,17 +63,22 @@ export class Button {
     constructor(options = {}) {
         const {
             Text = '',
+            innerHTML = null,
             OnClick = () => {},
             className = '',
-            id = null
+            id = ''
         } = options;
         
         this.button = document.createElement('button');
-        this.button.id = id || Text.toLowerCase().replace(/\s+/g, '-') + '-button';
+        this.button.id = id;
         this.button.textContent = Text;
         this.button.className = className;
         this.onClickHandler = OnClick;
         this.button.addEventListener('click', this.onClickHandler);
+    
+        if(innerHTML){
+            this.button.innerHTML = innerHTML;
+        }
     }
 
     setText(newText) {
