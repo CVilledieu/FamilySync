@@ -1,160 +1,179 @@
-// Calendar components and logic
-const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const months = [
+import {Button} from '/static/app/elements.js';
+
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONTHS = [
     'January', 'February', 'March', 'April', 'May', 'June', 
     'July', 'August', 'September', 'October', 'November', 'December'
 ];
+const MAX_CELLS = 42; // 6 weeks
 
-let currentDate = new Date();
-let displayDate = new Date();
 
-export const Calendar = () => {
-    const container = document.createElement('div');
-    container.className = 'calendar';
-    
-    const nav = createCalendarNav();
-    const header = createCalendarHeader();
-    const grid = createCalendarGrid();
-    
-    container.appendChild(nav);
-    container.appendChild(header);
-    container.appendChild(grid);
-    
-    // Pass the container to updateCalendar instead of calling it globally
-    updateCalendar(container);
-    return container;
+//Calendar object
+export class CalendarClass {
+    constructor(){
+        this.element = null;
+        this.displayedDate = new Date();
+        this.currentDate = new Date();
+        this.title = '';
+        this.events = [];
+        this.days = [];
+
+        this.init();
+    }
+
+    init(){
+        this.element = document.createElement('div');
+        this.element.classList.add('calendar');
+
+        //Builder methods 
+        this.#buildNavBar();
+        this.#buildDayHeader();
+        this.#buildBody();
+    }
+
+
+    //-------------------------
+    //      Nav Panel
+    //
+    #buildNavBar(){
+        const nav = document.createElement('div');
+        nav.classList.add('calendar-nav');
+
+        const prevBtn = new Button({
+            className: 'nav-button',
+            id: 'nav-prev',
+            innerHTML: '&#8249',
+            OnClick: () => this.updateCalendar('prev'),
+        });
+
+        const nextBtn = new Button({
+            className: 'nav-button',
+            id:'nav-next',
+            innerHTML: '&#8250',
+            OnClick: () => this.updateCalendar('Next'),
+
+        });
+
+        const monthYear = document.createElement('h2');
+        monthYear.classList.add('month-year');
+
+        nav.appendChild(prevBtn.button);
+        nav.appendChild(monthYear);
+        nav.appendChild(nextBtn.button);
+
+        this.element.appendChild(nav);
+    }
+
+    updateCalendar(setMonthTO){
+        switch (setMonthTO){
+            case 'prev':
+                this.displayedDate.setMonth(this.displayedDate.getMonth() -1);
+                break;
+            case 'next':
+                this.displayedDate.setMonth(this.displayedDate.getMonth() +1);
+                break;
+            default:
+                //Do nothing
+        }
+    }
+
+    //-------------------------
+    //      Day Header
+    //
+    #buildDayHeader(){
+        const header = document.createElement('div');
+        header.classList.add('calendar-header');
+
+        DAYS.forEach(day => {
+            const div = document.createElement('div');
+            div.classList.add('day-header');
+            div.textContent = day;
+            header.appendChild(div); 
+        });
+        this.element.appendChild(header);
+    }
+
+    //-------------------------
+    //      Body
+    //
+    #buildBody(){
+        const body = document.createElement('div');
+        body.classList.add('calendar-body');
+
+        for (let i = 0; i < MAX_CELLS; i++){
+            const newCell = new DayCell();
+            this.days.push(newCell);
+            body.appendChild(newCell.element);
+        }
+
+        this.element.appendChild(body);
+    }
+
+
+
 }
 
-const createCalendarNav = () => {
-    const nav = document.createElement('div');
-    nav.className = 'calendar-nav';
-    
-    const prevButton = document.createElement('button');
-    prevButton.className = 'nav-button';
-    prevButton.innerHTML = '&#8249;';
-    prevButton.addEventListener('click', () => {
-        displayDate.setMonth(displayDate.getMonth() - 1);
-        updateCalendar();
-    });
-    
-    const monthYear = document.createElement('h2');
-    monthYear.className = 'month-year';
-    
-    const nextButton = document.createElement('button');
-    nextButton.className = 'nav-button';
-    nextButton.innerHTML = '&#8250;';
-    nextButton.addEventListener('click', () => {
-        displayDate.setMonth(displayDate.getMonth() + 1);
-        updateCalendar();
-    });
-    
-    nav.appendChild(prevButton);
-    nav.appendChild(monthYear);
-    nav.appendChild(nextButton);
-    
-    return nav;
-}
 
-const createCalendarHeader = () => {
-    const header = document.createElement('div');
-    header.className = 'calendar-header';
-    
-    daysOfWeek.forEach(day => {
-        const dayElement = document.createElement('div');
-        dayElement.className = 'day-header';
-        dayElement.textContent = day;
-        header.appendChild(dayElement);
-    });
-    
-    return header;
-}
+class DayCell {
+    constructor(){
+        // Elements
+        this.date = null;
+        this.events = null;
+        this.element = null;
+        this.eventsArray = [];
 
-const createCalendarGrid = () => {
-    const grid = document.createElement('div');
-    grid.className = 'calendar-grid';
-    
-    // Create 42 cells (6 weeks × 7 days)
-    for (let i = 0; i < 42; i++) {
-        const cell = createCalendarCell();
-        cell.dataset.cellIndex = i;
-        grid.appendChild(cell);
+        this.init();
     }
     
-    return grid;
-}
+    init(){
+        const element = document.createElement('div');
+        element.classList.add('cell');
+        
 
-const createCalendarCell = () => {
-    const cell = document.createElement('div');
-    cell.className = 'calendar-cell';
-    
-    const dateNumber = document.createElement('div');
-    dateNumber.className = 'date-number';
-    
-    const events = document.createElement('div');
-    events.className = 'events';
-    
-    cell.appendChild(dateNumber);
-    cell.appendChild(events);
-    
-    // Add click event for potential future functionality
-    cell.addEventListener('click', (e) => {
-        const date = e.currentTarget.dataset.date;
-        if (date) {
-            console.log('Clicked on date:', date);
-            // Future: Open event creation modal or detail view
-        }
-    });
-    
-    return cell;
-}
+        const dateNumber = document.createElement('div');
+        dateNumber.classList.add('cell-date');
+        this.date = dateNumber;
 
-const updateCalendar = (container = document) => {
-    const monthYearElement = container.querySelector('.month-year');
-    const cells = container.querySelectorAll('.calendar-cell');
-    
-    // Check if elements exist before proceeding
-    if (!monthYearElement || !cells.length) {
-        console.error('Calendar elements not found');
-        return;
+        const events = document.createElement('div');
+        events.classList.add('cell-events');
+        this.events = events;
+
+        element.appendChild(dateNumber);
+        element.appendChild(events);    
+
+        this.element = element;
     }
+
+    update(date, events=[]){
+        this.date.textContent = date.getDate();
+        this.element.dataset.date = date.toISOString().split('T')[0];
+        this.events.innerHTML = '';
+        events.forEach(event => {
+            const eventDiv = document.createElement('div');
+            eventDiv.classList.add('event');
+            eventDiv.textContent = event.title;
+            this.events.appendChild(eventDiv);
+        });
+    }
+
     
-    // Update month/year display
-    monthYearElement.textContent = `${months[displayDate.getMonth()]} ${displayDate.getFullYear()}`;
-    
-    // Get first day of the month and calculate grid
-    const firstDay = new Date(displayDate.getFullYear(), displayDate.getMonth(), 1);
-    const lastDay = new Date(displayDate.getFullYear(), displayDate.getMonth() + 1, 0);
-    const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - firstDay.getDay());
-    
-    // Fill calendar cells
-    cells.forEach((cell, index) => {
-        const cellDate = new Date(startDate);
-        cellDate.setDate(startDate.getDate() + index);
-        
-        const dateNumber = cell.querySelector('.date-number');
-        const events = cell.querySelector('.events');
-        
-        dateNumber.textContent = cellDate.getDate();
-        cell.dataset.date = cellDate.toISOString().split('T')[0];
-        
-        // Reset classes
-        cell.className = 'calendar-cell';
-        
-        // Add appropriate classes
-        if (cellDate.getMonth() !== displayDate.getMonth()) {
-            cell.classList.add('other-month');
-        }
-        
-        if (isSameDay(cellDate, currentDate)) {
-            cell.classList.add('today');
-        }
-        
-    });
 }
 
-const isSameDay = (date1, date2) => {
-    return date1.getDate() === date2.getDate() &&
-           date1.getMonth() === date2.getMonth() &&
-           date1.getFullYear() === date2.getFullYear();
+class Event {
+    constructor(title, startTime, endTime, description=''){
+        this.title = title;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.description = description;
+        this.element = null;
+
+        this.init();
+    }
+
+    init(){
+        const element = document.createElement('div');
+        element.classList.add('event-item');
+        this.element = element;
+    }
+
 }

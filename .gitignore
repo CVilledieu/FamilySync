@@ -1,5 +1,6 @@
 # Folders
 tmp/
+deprecated/
 
 # Files
 .air.toml
