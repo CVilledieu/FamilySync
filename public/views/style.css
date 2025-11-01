@@ -7,8 +7,8 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #333;
+    background: linear-gradient(180deg, #1a1a1b 0%, #0d1117 50%, #000000 100%);
+    color: #e1e5e9;
     line-height: 1.6;
 }
 
@@ -23,22 +23,24 @@ body {
 
 /* Header Styles */
 header {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(30, 30, 32, 0.95);
     backdrop-filter: blur(10px);
     border-radius: 20px;
-    padding: 30px;
+    padding: 20px 30px;
     margin-bottom: 30px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 header h1 {
     font-size: 2.5rem;
     font-weight: 700;
-    color: #2d3748;
-    margin-bottom: 20px;
-    text-align: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #f0f6fc;
+    margin: 0;
+    background: linear-gradient(135deg, #58a6ff 0%, #bc8cff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -46,11 +48,11 @@ header h1 {
 
 /* Calendar Container */
 .calendar {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(30, 30, 32, 0.95);
     backdrop-filter: blur(10px);
     border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     overflow: hidden;
     flex: 1;
     min-height: 600px;
@@ -58,12 +60,13 @@ header h1 {
 
 /* Calendar Navigation */
 .calendar-nav {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: linear-gradient(135deg, #21262d 0%, #161b22 100%);
+    color: #f0f6fc;
     padding: 20px 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .calendar-nav h2 {
@@ -101,15 +104,15 @@ header h1 {
 .calendar-header {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    background: #f8fafc;
-    border-bottom: 2px solid #e2e8f0;
+    background: #161b22;
+    border-bottom: 2px solid #30363d;
 }
 
 .day-header {
     padding: 15px 10px;
     text-align: center;
     font-weight: 600;
-    color: #4a5568;
+    color: #8b949e;
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -125,35 +128,36 @@ header h1 {
 }
 
 .calendar-cell {
-    border: 1px solid #e2e8f0;
+    border: 1px solid #30363d;
     padding: 8px;
     min-height: 100px;
-    background: white;
+    background: #0d1117;
     transition: all 0.3s ease;
     position: relative;
     cursor: pointer;
     display: flex;
     flex-direction: column;
+    color: #e1e5e9;
 }
 
 .calendar-cell:hover {
-    background: #f7fafc;
+    background: #161b22;
     transform: scale(1.02);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
     z-index: 1;
 }
 
 .calendar-cell.other-month {
-    background: #f8fafc;
-    color: #a0aec0;
+    background: #010409;
+    color: #6e7681;
 }
 
 .calendar-cell.other-month .date-number {
-    color: #cbd5e0;
+    color: #484f58;
 }
 
 .calendar-cell.today {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #58a6ff 0%, #bc8cff 100%);
     color: white;
     font-weight: bold;
 }
@@ -163,12 +167,12 @@ header h1 {
 }
 
 .calendar-cell.today:hover {
-    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    background: linear-gradient(135deg, #388bfd 0%, #a870ff 100%);
 }
 
 .calendar-cell.active {
-    border: 2px solid #667eea;
-    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+    border: 2px solid #58a6ff;
+    box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.3);
 }
 
 .calendar-cell.today.active {
@@ -185,13 +189,13 @@ header h1 {
 
 .events {
     font-size: 0.75rem;
-    color: #718096;
+    color: #8b949e;
     flex-grow: 1;
     overflow-y: auto;
 }
 
 .event {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #58a6ff 0%, #bc8cff 100%);
     color: white;
     padding: 2px 6px;
     border-radius: 4px;
@@ -205,7 +209,7 @@ header h1 {
 }
 
 .event:hover {
-    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    background: linear-gradient(135deg, #388bfd 0%, #a870ff 100%);
     transform: translateY(-1px);
 }
 
@@ -216,23 +220,56 @@ header h1 {
     gap: 10px;
 }
 
+/* Header dropdown specific styles */
+header .dropdown {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    align-items: center;
+}
+
+header .dropdown label {
+    font-weight: 600;
+    color: #f0f6fc;
+    font-size: 1rem;
+    margin: 0;
+    white-space: nowrap;
+}
+
 .dropdown label {
     font-weight: 600;
-    color: #4a5568;
+    color: #f0f6fc;
     font-size: 1rem;
+}
+
+header .dropdown select {
+    padding: 8px 12px;
+    border: 2px solid #30363d;
+    border-radius: 8px;
+    background: #0d1117;
+    font-size: 0.9rem;
+    color: #e1e5e9;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%238b949e' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 8px center;
+    background-repeat: no-repeat;
+    background-size: 14px;
+    min-width: 120px;
 }
 
 .dropdown select {
     padding: 12px 16px;
-    border: 2px solid #e2e8f0;
+    border: 2px solid #30363d;
     border-radius: 12px;
-    background: white;
+    background: #0d1117;
     font-size: 1rem;
-    color: #4a5568;
+    color: #e1e5e9;
     cursor: pointer;
     transition: all 0.3s ease;
     appearance: none;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%238b949e' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
     background-position: right 12px center;
     background-repeat: no-repeat;
     background-size: 16px;
@@ -240,8 +277,8 @@ header h1 {
 
 .dropdown select:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: #58a6ff;
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2);
 }
 
 /* Responsive Design */
@@ -250,8 +287,18 @@ header h1 {
         padding: 10px;
     }
     
+    header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px 20px;
+    }
+    
     header h1 {
         font-size: 2rem;
+    }
+    
+    header .dropdown {
+        justify-content: center;
     }
     
     .calendar-nav {
@@ -317,8 +364,8 @@ header h1 {
     content: '';
     width: 40px;
     height: 40px;
-    border: 4px solid #e2e8f0;
-    border-top: 4px solid #667eea;
+    border: 4px solid #30363d;
+    border-top: 4px solid #58a6ff;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
