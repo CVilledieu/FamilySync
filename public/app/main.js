@@ -1,10 +1,11 @@
 import { DropdownMenu } from '/static/app/elements.js';
-import { Calendar } from '/static/app/calendar.js';
+import { CalendarClass } from '/static/app/calendar.js';
 
 class App {
     constructor() {
         this.appRoot = document.getElementById('root');
         this.selectedPerson = null;
+        this.calendar = null;
         this.init();
     }
 
@@ -12,8 +13,12 @@ class App {
     //
     async init() {
         try {
-            const names = await fetch('/names').then(res => res.json());
-            this.buildHeader(names);
+            // For now, we'll skip the API call and just build the calendar
+            // You can uncomment this when your API is ready:
+            // const names = await fetch('/names').then(res => res.json());
+            // this.buildHeader(names);
+            
+            this.buildHeader(['Alice', 'Bob', 'Charlie']); // Sample names for testing
             this.buildCalendar();
         } catch (error) {
             console.error('Initialization error:', error);
@@ -52,15 +57,31 @@ class App {
     buildCalendar() {
         try {
             
-            const calendar = Calendar();
-            this.appRoot.appendChild(calendar);
+            this.calendar = new CalendarClass();
+            this.appRoot.appendChild(this.calendar.element);
             
             this.addKeyboardNavigation();
+            this.addDateSelectionListener();
             
         } catch (error) {
             console.error('Error in buildCalendar:', error);
             throw error;
         }
+    }
+    
+    addDateSelectionListener() {
+        document.addEventListener('dateSelected', (e) => {
+            const { date, events } = e.detail;
+            console.log(`Selected date: ${date}`, events);
+            // Here you can add logic to handle date selection
+            // For example, open a modal, update a sidebar, etc.
+        });
+    }
+    
+    updateCalendarForPerson(personName) {
+        this.updateCalendarHeader(personName);
+        // Here you would make an API call to get person-specific events
+        // For now, we'll just update the header
     }
     
     updateCalendarHeader(personName) {
@@ -70,7 +91,7 @@ class App {
         } else {
             title.textContent = 'FamilySync';
         }
-        // Api call for person-specific events
+        // Api call for person-specific events would go here
     }
     
     addKeyboardNavigation() {

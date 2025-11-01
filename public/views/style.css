@@ -75,17 +75,26 @@ header h1 {
     background: rgba(255, 255, 255, 0.2);
     border: none;
     color: white;
-    padding: 10px 15px;
+    padding: 12px 16px;
     border-radius: 10px;
     cursor: pointer;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .nav-button:hover {
     background: rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.nav-button:active {
+    transform: translateY(0);
 }
 
 /* Days of Week Header */
@@ -107,11 +116,12 @@ header h1 {
 }
 
 /* Calendar Grid */
-.calendar-grid {
+.calendar-body {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     grid-template-rows: repeat(6, 1fr);
     height: calc(100% - 140px);
+    min-height: 500px;
 }
 
 .calendar-cell {
@@ -122,6 +132,8 @@ header h1 {
     transition: all 0.3s ease;
     position: relative;
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
 }
 
 .calendar-cell:hover {
@@ -136,25 +148,46 @@ header h1 {
     color: #a0aec0;
 }
 
+.calendar-cell.other-month .date-number {
+    color: #cbd5e0;
+}
+
 .calendar-cell.today {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     font-weight: bold;
 }
 
+.calendar-cell.today .date-number {
+    color: white;
+}
+
 .calendar-cell.today:hover {
     background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+.calendar-cell.active {
+    border: 2px solid #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
+.calendar-cell.today.active {
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
 }
 
 .date-number {
     font-weight: 600;
     font-size: 1.1rem;
     margin-bottom: 5px;
+    flex-shrink: 0;
 }
 
 .events {
     font-size: 0.75rem;
     color: #718096;
+    flex-grow: 1;
+    overflow-y: auto;
 }
 
 .event {
@@ -167,6 +200,13 @@ header h1 {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.event:hover {
+    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    transform: translateY(-1px);
 }
 
 /* Dropdown Styles */
@@ -234,6 +274,34 @@ header h1 {
     .day-header {
         padding: 10px 5px;
         font-size: 0.8rem;
+    }
+    
+    .event {
+        font-size: 0.65rem;
+        padding: 1px 4px;
+    }
+}
+
+@media (max-width: 480px) {
+    .calendar-cell {
+        min-height: 60px;
+        padding: 3px;
+    }
+    
+    .date-number {
+        font-size: 0.9rem;
+        margin-bottom: 3px;
+    }
+    
+    .event {
+        font-size: 0.6rem;
+        padding: 1px 3px;
+        margin: 1px 0;
+    }
+    
+    .day-header {
+        padding: 8px 3px;
+        font-size: 0.7rem;
     }
 }
 
