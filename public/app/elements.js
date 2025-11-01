@@ -72,7 +72,7 @@ export class Button {
         this.button = document.createElement('button');
         this.button.id = id;
         this.button.textContent = Text;
-        this.button.className = className;
+        this.button.classList.add(className);
         this.onClickHandler = OnClick;
         this.button.addEventListener('click', this.onClickHandler);
     
