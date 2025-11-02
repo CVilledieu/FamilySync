@@ -13,13 +13,11 @@ class App {
     //
     async init() {
         try {
-            // For now, we'll skip the API call and just build the calendar
-            // You can uncomment this when your API is ready:
             // const names = await fetch('/names').then(res => res.json());
             // this.buildHeader(names);
-            
-            this.buildHeader(['Alice', 'Bob', 'Charlie']); // Sample names for testing
+            this.buildSidebar(['Alice', 'Bob', 'Charlie']); // Sample names for testing
             this.buildCalendar();
+            
         } catch (error) {
             console.error('Initialization error:', error);
             //Error handling plan/options:
@@ -30,25 +28,40 @@ class App {
 
     }
 
-    buildHeader(names){
+    buildSidebar(names){
         try{
-            const header = document.createElement('header');
+            const sidebar = document.createElement('aside');
+            sidebar.className = 'sidebar';
+            
             const title = document.createElement('h1');
             title.textContent = 'FamilySync';
-            header.appendChild(title);
+            title.className = 'sidebar-title';
+            sidebar.appendChild(title);
+
+            const divider = document.createElement('hr');
+            divider.className = 'sidebar-divider';
+            sidebar.appendChild(divider);
             
-            const dropdown = DropdownMenu('View schedule for:', names);
-            const select = dropdown.querySelector('select');
+            const nameDropdown = DropdownMenu('View schedule for:', names);
+            nameDropdown.className = 'sidebar-dropdown person-selector';
+            const select = nameDropdown.querySelector('select');
             
             select.addEventListener('change', (e) => {
                 this.selectedPerson = e.target.value;
-                this.updateCalendarForPerson(this.selectedPerson);
-            });
-            
-            header.appendChild(dropdown);
-            this.appRoot.appendChild(header);
+                // Fetch data for selected person
+                // const data = await fetch(`/calendar?person=${this.selectedPerson}`).then(res => res.json());
+                // Pass data to loadPersonalCalendar
+                this.calendar.loadPersonalCalendar(this.selectedPerson);
+            });            
+            sidebar.appendChild(nameDropdown);
+
+            const viewDropdown = DropdownMenu('View:', ['Calendar', 'Events']);
+            viewDropdown.className = 'sidebar-dropdown view-selector';
+            sidebar.appendChild(viewDropdown);
+
+            this.appRoot.appendChild(sidebar);
         } catch (error){
-            console.error('Error building header:', error);
+            console.error('Error building sidebar:', error);
             throw error;
         }
 
@@ -56,12 +69,14 @@ class App {
 
     buildCalendar() {
         try {
+            // Create main content area
+            const mainContent = document.createElement('main');
+            mainContent.className = 'main-content';
+            mainContent.id = 'calendar-container';
             
             this.calendar = new CalendarClass();
-            this.appRoot.appendChild(this.calendar.element);
-            
-            this.addKeyboardNavigation();
-            this.addDateSelectionListener();
+            mainContent.appendChild(this.calendar.element);
+            this.appRoot.appendChild(mainContent);
             
         } catch (error) {
             console.error('Error in buildCalendar:', error);
@@ -69,51 +84,6 @@ class App {
         }
     }
     
-    addDateSelectionListener() {
-        document.addEventListener('dateSelected', (e) => {
-            const { date, events } = e.detail;
-            console.log(`Selected date: ${date}`, events);
-            // Here you can add logic to handle date selection
-            // For example, open a modal, update a sidebar, etc.
-        });
-    }
-    
-    updateCalendarForPerson(personName) {
-        this.updateCalendarHeader(personName);
-        // Here you would make an API call to get person-specific events
-        // For now, we'll just update the header
-    }
-    
-    updateCalendarHeader(personName) {
-        const title = document.querySelector('header h1');
-        if (personName) {
-            title.textContent = `${personName}'s Schedule`;
-        } else {
-            title.textContent = 'FamilySync';
-        }
-        // Api call for person-specific events would go here
-    }
-    
-    addKeyboardNavigation() {
-        document.addEventListener('keydown', (e) => {
-            const navButtons = document.querySelectorAll('.nav-button');
-            
-            switch(e.key) {
-                case 'ArrowLeft':
-                    if (e.ctrlKey && navButtons[0]) {
-                        navButtons[0].click(); // Previous month
-                        e.preventDefault();
-                    }
-                    break;
-                case 'ArrowRight':
-                    if (e.ctrlKey && navButtons[1]) {
-                        navButtons[1].click(); // Next month
-                        e.preventDefault();
-                    }
-                    break;
-            }
-        });
-    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {

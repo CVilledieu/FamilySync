@@ -17,6 +17,7 @@ export class CalendarClass {
         this.title = '';
         this.events = [];
         this.days = [];
+        this.selectedCell = null;
 
         this.init();
     }
@@ -32,9 +33,13 @@ export class CalendarClass {
         this.#populateCalendar();
     }
 
-
     //-------------------------
-    //      Nav Panel
+    //     Private Methods
+
+
+    // NavBar contents:
+    //  - Month/Year display/title
+    //  - Prev/Next buttons
     //
     #buildNavBar(){
         const nav = document.createElement('div');
@@ -80,9 +85,8 @@ export class CalendarClass {
         this.#populateCalendar();
     }
 
-    //-------------------------
-    //      Day Header
-    //
+    // DayHeader contents:
+    // - Days of the week
     #buildDayHeader(){
         const header = document.createElement('div');
         header.classList.add('calendar-header');
@@ -97,24 +101,21 @@ export class CalendarClass {
     }
 
     //-------------------------
-    //      Body
+    //      Calendar Body
     //
     #buildBody(){
         const body = document.createElement('div');
         body.classList.add('calendar-body');
 
         for (let i = 0; i < MAX_CELLS; i++){
-            const newCell = new DayCell();
+            const newCell = new DayCell(this); // Pass calendar reference
             this.days.push(newCell);
             body.appendChild(newCell.element);
         }
 
         this.element.appendChild(body);
     }
-
-    //-------------------------
-    //      Calendar Population
-    //
+    
     #populateCalendar(){
         // Update month/year display
         this.monthYearElement.textContent = `${MONTHS[this.displayedDate.getMonth()]} ${this.displayedDate.getFullYear()}`;
@@ -159,29 +160,35 @@ export class CalendarClass {
                date1.getFullYear() === date2.getFullYear();
     }
 
-    // Public method to update events (for API integration)
+
+    //-------------------------
+    //     Public Methods
+
     updateEvents(events) {
         this.events = events;
         this.#populateCalendar();
     }
 
-    // Public method to get the current displayed month/year
-    getCurrentDate() {
-        return new Date(this.displayedDate);
+    //Method to remove currently selected cell highlight and set new one
+    onDayFocus(cell) {
+        if (this.selectedCell) {
+            this.selectedCell.element.classList.remove('focused');
+        }
+        this.selectedCell = cell;  
+             
     }
-
-
 
 }
 
 
 class DayCell {
-    constructor(){
-        // Elements
+    constructor(calendar = null){
+
         this.date = null;
         this.events = null;
         this.element = null;
         this.eventsArray = [];
+        this.calendar = calendar; // Store calendar reference
 
         this.init();
     }
@@ -203,30 +210,15 @@ class DayCell {
 
         // Add click event listener
         element.addEventListener('click', () => {
-            this.onClick();
+            this.focus();
         });
 
         this.element = element;
     }
 
-    onClick() {
-        // Remove active class from all cells
-        document.querySelectorAll('.calendar-cell').forEach(cell => {
-            cell.classList.remove('active');
-        });
-        
-        // Add active class to this cell
-        this.element.classList.add('active');
-        
-        // You can add custom event handling here
-        // For example, emit a custom event with the cell's date
-        const event = new CustomEvent('dateSelected', {
-            detail: {
-                date: this.element.dataset.date,
-                events: this.eventsArray
-            }
-        });
-        document.dispatchEvent(event);
+    focus() {     
+        this.calendar.onDaySelected(this);        
+        this.element.classList.add('focused');
     }
 
     update(date, events=[]){
@@ -248,11 +240,25 @@ class DayCell {
 }
 
 class Event {
-    constructor(title, startTime, endTime, description=''){
+    //By limiting event creation to date and title only, 
+    //We can implement all day events easily and then add time and description later
+    //Side note: This may make recurring events or multi-day events eaiser to implement later as well
+    constructor(options = {}) {
+        const {
+            month = null,
+            day = null,
+            year = null,
+            title = '',
+        } = options;
+
         this.title = title;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.description = description;
+        this.month = month;
+        this.day = day;
+        this.year = year;
+
+        this.startTime = null;
+        this.endTime = null;
+        this.description = '';
         this.element = null;
 
         this.init();
