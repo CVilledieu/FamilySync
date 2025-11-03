@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 
 	_ "github.com/tursodatabase/turso-go"
 )
@@ -16,11 +17,37 @@ defer stmt.Close()
 
 type Database struct {
 	Connection *sql.DB
+	tableNames []string
 }
 
-func InitDB() Database {
+func InitConnection() Database {
 	conn, _ := sql.Open("turso", "./database/FamilySync.db")
-	return Database{Connection: conn}
+	var tableName = "users"
+	// Create Users table if it doesn't exist
+	s, _ := conn.Prepare(`CREATE TABLE IF NOT EXISTS ` + tableName + ` (id INTEGER PRIMARY KEY AUTOINCREMENT, name varchar(50), username varchar(100), password varchar(100));`)
+	defer s.Close()
+	s.Exec()
+
+	fmt.Println("Database connected and initialized.")
+	return Database{
+		Connection: conn,
+		tableNames: []string{"users"},
+	}
+}
+
+//func (db Database) createTable(tableName, tableSchema string) error {
+
+//}
+
+func (db Database) GetValidateUser(username, password string) (bool, error) {
+	var exists bool
+	stmt, _ := db.Connection.Prepare("SELECT EXISTS(SELECT 1 FROM users WHERE name=? AND password=?)")
+	defer stmt.Close()
+	err := stmt.QueryRow(username, password).Scan(&exists)
+	if err != nil {
+		return false, err
+	}
+	return exists, nil
 }
 
 func (db Database) GetUserNames() ([]string, error) {

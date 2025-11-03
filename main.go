@@ -20,7 +20,7 @@ func main() {
 	e.Renderer = newTemplate()
 
 	// Initialize database
-	db = database.InitDB()
+	db = database.InitConnection()
 
 	// Serv static files
 	e.Static("/style", "./public/style")
@@ -51,12 +51,8 @@ func getSchedule(c echo.Context) error {
 }
 
 func getNames(c echo.Context) error {
-	db.GetUserNames()
-	members := []string{
-		"Dad",
-		"Mom",
-	}
-	return c.JSON(http.StatusOK, members)
+	names, _ := db.GetUserNames()
+	return c.JSON(http.StatusOK, names)
 }
 
 func pageIndex(c echo.Context) error {
