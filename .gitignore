@@ -1,6 +1,9 @@
 # Folders
 tmp/
 deprecated/
+non_public/
+database/
 
 # Files
 .air.toml
+.env

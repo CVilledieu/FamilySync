@@ -1,6 +1,9 @@
 package main
 
 import (
+	database "FamilySync/server"
+	"flag"
+	"fmt"
 	"html/template"
 	"io"
 	"net/http"
@@ -8,21 +11,29 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-const PORT string = ":8080"
 const INDEX_PATH string = "public/views/*.html"
 
-type Template struct {
-	templates *template.Template
-}
+var db database.Database
 
-func newTemplate() *Template {
-	return &Template{
-		templates: template.Must(template.ParseGlob(INDEX_PATH)),
-	}
-}
+func main() {
+	e := echo.New()
+	e.Renderer = newTemplate()
 
-func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
-	return t.templates.ExecuteTemplate(w, name, data)
+	// Initialize database
+	db = database.InitDB()
+
+	// Serv static files
+	e.Static("/style", "./public/style")
+	e.Static("/app", "./public/app")
+
+	// Routes
+	e.GET("/", pageIndex)
+	e.GET("/names", getNames)
+
+	// Start server
+	var PORT = getPort()
+
+	e.Logger.Fatal(e.Start(PORT))
 }
 
 // --------------------
@@ -40,6 +51,7 @@ func getSchedule(c echo.Context) error {
 }
 
 func getNames(c echo.Context) error {
+	db.GetUserNames()
 	members := []string{
 		"Dad",
 		"Mom",
@@ -51,16 +63,33 @@ func pageIndex(c echo.Context) error {
 	return c.Render(http.StatusOK, "index", nil)
 }
 
-func main() {
-	e := echo.New()
-	e.Renderer = newTemplate()
+// getPort checks for a command line argument "-port" to set the server port.
+// If not provided, it defaults to ":6969".
+func getPort() string {
+	portFlag := flag.String("port", "", "Port to run the server on")
 
-	// Serv static files
-	e.Static("/style", "./public/style")
-	e.Static("/app", "./public/app")
+	flag.Parse()
 
-	e.GET("/", pageIndex)
-	e.GET("/names", getNames)
-	e.GET("/schedule", getSchedule)
-	e.Logger.Fatal(e.Start(PORT))
+	if *portFlag != "" {
+		fmt.Printf("Using port from command line argument: %s\n", *portFlag)
+		return ":" + *portFlag
+	} else {
+		fmt.Println("PORT not provided, defaulting to :6969")
+		return ":6969"
+	}
+
+}
+
+type Template struct {
+	templates *template.Template
+}
+
+func newTemplate() *Template {
+	return &Template{
+		templates: template.Must(template.ParseGlob(INDEX_PATH)),
+	}
+}
+
+func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+	return t.templates.ExecuteTemplate(w, name, data)
 }

@@ -16,7 +16,6 @@ export class index{
     init(){
         //Possibly check user for admin mode
         //fetch user data here and set this.user accordingly
-        this.appRoot.innerHTML = '';
         this.bannerRoot = document.createElement('div');
         this.bannerRoot.classList.add('page-banner');
         this.appRoot.appendChild(this.bannerRoot);
@@ -25,26 +24,26 @@ export class index{
         this.pageRoot = document.createElement('div');
         this.pageRoot.classList.add('app-root');
         this.appRoot.appendChild(this.pageRoot);
-        this.home();
+        this.pageSelect();
         
     }
 
-    //Content Note: at the moment banner only has title, but an exit button may be added later. Exit button would close out of current app and rebuild to home screen
+    //Content Note: at the moment banner only has title, but an exit button may be added later. Exit button would close out of current app and rebuild to pageSelect screen
     banner(){      
         const title = document.createElement('h1');
         title.textContent = 'FamilySync';
-        title.className = 'page-title';
+        title.className = 'banner-title';
         this.bannerRoot.appendChild(title);        
     }
 
     // Content Note: If other universal components are needed, add here. appSelection is being treated as separate app component
-    // Function Note: called to rebuild home screen when exiting an app
+    // Function Note: called to rebuild pageSelect screen when exiting an app
     // At the moment each app is responsible for how to implement the exit function, but may change later
-    home(){
+    pageSelect(){
         this.pageRoot.innerHTML = '';
         const apps = [
             new appTile('Calendar', () => {
-                this.currentApp = new CalendarApp(this.pageRoot, this.user, () => this.home());
+                this.currentApp = new CalendarApp(this.pageRoot, this.user, () => this.pageSelect());
             }),
             new appTile('Events', () => {
                 console.log('Events app launched');
