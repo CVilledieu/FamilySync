@@ -9,8 +9,7 @@ import (
 )
 
 const PORT string = ":8080"
-
-const VIEW_PATH string = "public/views/"
+const INDEX_PATH string = "public/views/*.html"
 
 type Template struct {
 	templates *template.Template
@@ -18,7 +17,7 @@ type Template struct {
 
 func newTemplate() *Template {
 	return &Template{
-		templates: template.Must(template.ParseGlob(VIEW_PATH + "*.html")),
+		templates: template.Must(template.ParseGlob(INDEX_PATH)),
 	}
 }
 
@@ -55,7 +54,10 @@ func pageIndex(c echo.Context) error {
 func main() {
 	e := echo.New()
 	e.Renderer = newTemplate()
-	e.Static("/static", "./public")
+
+	// Serv static files
+	e.Static("/style", "./public/style")
+	e.Static("/app", "./public/app")
 
 	e.GET("/", pageIndex)
 	e.GET("/names", getNames)

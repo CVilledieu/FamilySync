@@ -1,4 +1,4 @@
-import {Button} from '/static/app/elements.js';
+import {Button} from '/app/util/elements.js';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTHS = [
@@ -10,11 +10,11 @@ const MAX_CELLS = 42; // 6 weeks
 
 //Calendar object
 export class CalendarClass {
+    _appName = 'Calendar';
     constructor(){
         this.element = null;
         this.displayedDate = new Date();
         this.currentDate = new Date();
-        this.title = '';
         this.events = [];
         this.days = [];
         this.selectedCell = null;
@@ -38,7 +38,7 @@ export class CalendarClass {
 
 
     // NavBar contents:
-    //  - Month/Year display/title
+    //  - Month/Year
     //  - Prev/Next buttons
     //
     #buildNavBar(){
@@ -107,12 +107,16 @@ export class CalendarClass {
         const body = document.createElement('div');
         body.classList.add('calendar-body');
 
+        // Creates day cells within memory first using DocumentFragment
+        // This minimizes reflows/repaints
+        const fragment = document.createDocumentFragment();
         for (let i = 0; i < MAX_CELLS; i++){
             const newCell = new DayCell(this); // Pass calendar reference
             this.days.push(newCell);
-            body.appendChild(newCell.element);
+            fragment.appendChild(newCell.element);
         }
 
+        body.appendChild(fragment);
         this.element.appendChild(body);
     }
     
@@ -217,7 +221,7 @@ class DayCell {
     }
 
     focus() {     
-        this.calendar.onDaySelected(this);        
+        this.calendar.onDayFocus(this);        
         this.element.classList.add('focused');
     }
 
