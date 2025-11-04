@@ -1,5 +1,5 @@
-import { DropdownMenu } from '/app/util/elements.js';
-import { CalendarClass } from '/app/calendar/cal_class.js';
+import { DropdownMenu } from '/util/elements.js';
+import { CalendarClass } from '/calendar/cal_class.js';
 
 export class CalendarApp {
     constructor(pageRoot, user, exit) {

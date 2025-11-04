@@ -1,8 +1,6 @@
-import {CalendarApp} from '/app/calendar/cal_app.js';
-import {loginPage} from '/app/util/login.js';
+import {CalendarApp} from '/calendar/cal_app.js';
 
-
-export class index{
+export class mainApp{
     #adminMode = false; 
     constructor(user) {
         this.appRoot = document.getElementById('root');
@@ -92,7 +90,3 @@ class appTile{
         this.launcher = launcher;
     }
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    new loginPage;
-});

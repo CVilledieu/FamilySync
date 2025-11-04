@@ -1,4 +1,4 @@
-import {Button} from '/app/util/elements.js';
+import {Button} from '/util/elements.js';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTHS = [

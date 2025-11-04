@@ -1,28 +1,17 @@
-import {index} from '/app/index.js';
-import {Button} from '/app/util/elements.js';
-import {User} from '/app/util/user.js';
-
+import {Button} from '/util/elements.js';
 
 export class loginPage{
     constructor() {
         this.appRoot = document.getElementById('root');
-        this.user = null;
+        this.username = null;
+        this.password = null;
         this.init();
     }
     init(){
         //Confirm preexisting content has been cleared
         this.appRoot.innerHTML = '';
-        if(this.checkTokens()){
-            this.Login();
-        }
-        this.createPage();
-    }
 
-    checkTokens(){
-        // Placeholder for token checking logic
-        // If valid tokens found, set this.user and proceed to index
-        // For now, we assume no valid tokens
-        return false;
+        this.createPage();
     }
 
     createPage(){
@@ -35,13 +24,14 @@ export class loginPage{
         this.appRoot.appendChild(loginDiv);
     }
 
+    //Code Quality Note: function is a bit long, but keeps related code together for easier modification later
     createPanel(){
         const panel = document.createElement('div');
         panel.classList.add('login-panel');
 
         // Create a form-like structure with proper grouping
         const usernameGroup = document.createElement('div');
-        usernameGroup.style.width = '100%';
+        usernameGroup.style.width = '100%'; 
         
         const usernameLabel = document.createElement('label');
         usernameLabel.textContent = 'Username';
@@ -51,13 +41,14 @@ export class loginPage{
         usernameInput.type = 'text';
         usernameInput.id = 'username';
         usernameInput.placeholder = 'Enter your username';
-        
+        this.username = usernameInput;
+
         usernameGroup.appendChild(usernameLabel);
         usernameGroup.appendChild(usernameInput);
         panel.appendChild(usernameGroup);
 
         const passwordGroup = document.createElement('div');
-        passwordGroup.style.width = '100%';
+        passwordGroup.style.width = '100%'; 
         
         const passwordLabel = document.createElement('label');
         passwordLabel.textContent = 'Password';
@@ -67,6 +58,7 @@ export class loginPage{
         passwordInput.type = 'password';
         passwordInput.id = 'password';
         passwordInput.placeholder = 'Enter your password';
+        this.password = passwordInput;
         
         passwordGroup.appendChild(passwordLabel);
         passwordGroup.appendChild(passwordInput);
@@ -75,18 +67,36 @@ export class loginPage{
         const loginButton = new Button({
             className: 'login-button',
             Text: 'Login',
-            OnClick: ()=> this.Login()
+            OnClick: ()=> this.LoginAttempt()
         });
         panel.appendChild(loginButton.button);
         return panel;
     }
+    async LoginAttempt(){
+        // Send login data to server for authentication
+        try{
+            const username = this.username.value;
+            const password = this.password.value;
+            const headers = new Headers();
+            headers.append('entries', btoa(username));
+            headers.append('entries', btoa(password));
 
+            const attempt = await fetch('/auth', {
+                method: 'GET',
+                headers: headers,                
+            });
+            if(attempt.ok){
+                //Login successful
+                //const userData = await attempt.json();
+                this.appRoot.innerHTML = '';
+                const { mainApp } = await import('/main.js');
+                await new mainApp('userData');
+            }
+        } catch (error){
+            console.error('Login attempt failed:', error);
+            
+        }
 
-    // Content Note: Current login screen doesnt have actual authentication yet
-    Login(){
-        this.user = new User('Test User');
-        this.appRoot.innerHTML = '';//Clear login page
-        new index('Test User');
     }
-    
 }
+

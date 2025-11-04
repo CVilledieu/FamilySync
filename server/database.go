@@ -1,4 +1,4 @@
-package database
+package server
 
 import (
 	"database/sql"
@@ -15,13 +15,21 @@ stmt, _ := conn.Prepare("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KE
 defer stmt.Close()
 */
 
+const DB_PATH string = "./database/FamilySync.db"
+
+// List of table names
+// --------------------
+//
+//	Database Schema
+const USERS_TABLE string = "users"
+
 type Database struct {
 	Connection *sql.DB
 	tableNames []string
 }
 
 func InitConnection() Database {
-	conn, _ := sql.Open("turso", "./database/FamilySync.db")
+	conn, _ := sql.Open("turso", DB_PATH)
 	var tableName = "users"
 	// Create Users table if it doesn't exist
 	s, _ := conn.Prepare(`CREATE TABLE IF NOT EXISTS ` + tableName + ` (id INTEGER PRIMARY KEY AUTOINCREMENT, name varchar(50), username varchar(100), password varchar(100));`)
