@@ -58,7 +58,7 @@ func (db Database) GetValidateUser(username, password string) (bool, error) {
 	return exists, nil
 }
 
-func (db Database) GetUserNames() ([]string, error) {
+func (db Database) getNameList() ([]string, error) {
 	var namesArray []string
 	stmt, _ := db.Connection.Prepare("SELECT name FROM users")
 	defer stmt.Close()

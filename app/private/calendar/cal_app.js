@@ -2,13 +2,12 @@ import { DropdownMenu } from '/util/elements.js';
 import { CalendarClass } from '/calendar/cal_class.js';
 
 export class CalendarApp {
-    constructor(pageRoot, user, exit) {
-        this.pageRoot = pageRoot;
-        this.appRoot = document.createElement('div');
-        this.appRoot.classList.add('calendar-app');
+    constructor(appCtx) {
+        this.displayRoot = document.createElement('div');
+        this.displayRoot.classList.add('calendar-app');
         
-        console.log('CalendarApp initialized. Exit function is\n', exit);
-        this.user = user;
+        appCtx.pageCtx.frameRoot.appendChild(this.displayRoot);
+        this.user = appCtx.userData;
         this.calendar = null;
         this.exitFunc = exit;
         this.init();

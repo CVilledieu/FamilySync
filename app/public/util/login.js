@@ -1,7 +1,8 @@
 import {Button} from '/util/elements.js';
 
 export class loginPage{
-    constructor() {
+    constructor(context) {
+        this._context = context;
         this.appRoot = document.getElementById('root');
         this.username = null;
         this.password = null;
@@ -11,10 +12,6 @@ export class loginPage{
         //Confirm preexisting content has been cleared
         this.appRoot.innerHTML = '';
 
-        this.createPage();
-    }
-
-    createPage(){
         const loginDiv = document.createElement('div');
         loginDiv.className = 'login-page';
 
@@ -72,6 +69,7 @@ export class loginPage{
         panel.appendChild(loginButton.button);
         return panel;
     }
+
     async LoginAttempt(){
         // Send login data to server for authentication
         try{
@@ -89,8 +87,7 @@ export class loginPage{
                 //Login successful
                 //const userData = await attempt.json();
                 this.appRoot.innerHTML = '';
-                const { mainApp } = await import('/main.js');
-                await new mainApp('userData');
+                await this._context.login()
             }
         } catch (error){
             console.error('Login attempt failed:', error);

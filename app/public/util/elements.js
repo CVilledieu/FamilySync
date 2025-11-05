@@ -85,7 +85,7 @@ export class Button {
         this.button.textContent = newText;
     }
     
-    updateOnClick(newOnClick) {
+    async updateOnClick(newOnClick) {
         this.button.removeEventListener('click', this.onClickHandler);
         this.onClickHandler = newOnClick;
         this.button.addEventListener('click', this.onClickHandler);

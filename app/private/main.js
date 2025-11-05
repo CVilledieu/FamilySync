@@ -1,13 +1,125 @@
 import {CalendarApp} from '/calendar/cal_app.js';
 
+export class app {
+    constructor(authCtx) {
+        this.authCtx = authCtx;
+        this.pageCtx = null;
+        this.userData = {};
+        this.init();
+    }
+    async init(){
+        try {
+            await this.getUserData();
+        } catch(error){
+            console.error('Failed to get userData from server: ', error);
+        }
+
+        this.pageCtx = new pageContext;
+    }
+
+    async getUserData(){
+         try {
+            const res = await this.authCtx.sendRequest('/api', 'GET');
+            if (res == null || !res.ok) {
+                throw new Error(`HTTP error! status: ${res ? res.status : 'No Response'}`);
+            }
+            const resData = await res.json();
+            this.userData = resData;
+        } catch (error) {
+            console.error('Failed to initialize app context:', error);
+        }
+        
+    }
+    
+    loadFrame_Home(){
+        this.pageCtx.clearFrame();
+
+        const dashboard = document.createElement('div');
+        dashboard.classList.add('dashboard');
+
+        const list = getDashboardList(appCtx);
+        const fragment = document.createDocumentFragment();
+        list.forEach( item =>{
+            const div = document.createElement('div');
+            div.classList.add('dashboard-item');
+            div.textContent = item.name;
+            div.onclick = () => item.onClick();
+
+            fragment.appendChild(div);
+        });
+
+        dashboard.appendChild(fragment);
+        this.frameRoot.appendChild(dashboard);
+    }
+
+    getDashboardList(){
+        const list = [
+            {name: 'Calendar', onClick: this.loadFrame_Calendar()},
+            {name: 'Events', onClick: this.loadFrame_Events()},
+            {name: 'Settings', onClick: this.loadFrame_Settings()},
+            {name: 'Log out', onClick: this.authCtx.logout()}
+        ];
+        return list;
+    }
+
+    loadFrame_Calendar(){
+        const newApp = new CalendarApp(this);
+    }
+
+    loadFrame_Events(){
+        console.log("Events clicked");
+    }
+
+    loadFrame_Settings(){
+        console.log("Settings clicked");
+    }
+}
+
+class pageContext {
+    constructor(){
+        this.mainRoot = document.getElementById('root');
+        this.bannerRoot = document.createElement('div');
+        this.frameRoot = document.createElement('div');
+        this.init();   
+    }
+
+    init(){
+        this.bannerRoot.classList.add('banner-root');
+        this.frameRoot.classList.add('dashboard-root');
+        this.mainRoot.appendChild(this.bannerRoot);
+        this.mainRoot.appendChild(this.frameRoot);
+       
+        createBanner();
+        loadFrame_Home();
+    }
+
+    createBanner(){
+        const title = document.createElement('h1');
+        title.textContent = 'FamilySync';
+        title.className = 'banner-title';
+
+        this.bannerRoot.appendChild(title); 
+    }
+
+    //Clears out any content within the dashboard-root
+    clearFrame(){
+        this.frameRoot.innerHTML = '';
+    }
+    
+
+
+}
+
+
+
 export class mainApp{
     #adminMode = false; 
-    constructor(user) {
+    constructor(context) {
         this.appRoot = document.getElementById('root');
         this.bannerRoot = null;
         this.pageRoot = null;
-        this.user = user;
         this.currentApp = null;
+        this._authCtx = context;
         this.init();
     }
 
@@ -41,7 +153,7 @@ export class mainApp{
         this.pageRoot.innerHTML = '';
         const apps = [
             new appTile('Calendar', () => {
-                this.currentApp = new CalendarApp(this.pageRoot, this.user, () => this.pageSelect());
+                this.currentApp = new CalendarApp(this.pageRoot, this._authCtx, () => this.pageSelect());
             }),
             new appTile('Events', () => {
                 console.log('Events app launched');
@@ -55,7 +167,8 @@ export class mainApp{
                 //Future: clear session, tokens, etc.
                 //Future will be processed by loginPage class
                 this.appRoot.innerHTML = '';
-                new loginPage(); 
+
+                this._authCtx.logout();
             })  
         ];
         const appSelect = this.#appSelection(apps);
@@ -90,3 +203,4 @@ class appTile{
         this.launcher = launcher;
     }
 }
+

@@ -34,7 +34,7 @@ func StartServer() {
 	// Routes
 	e.GET("/", renderIndex)
 	e.GET("/auth", updatePage)
-	e.GET("/names", getNames)
+	e.GET("/api", getAppData)
 
 	// Start server
 	var PORT = getPort()
