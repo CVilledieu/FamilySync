@@ -84,10 +84,11 @@ export class loginPage{
                 headers: headers,                
             });
             if(attempt.ok){
+                console.log("Successful auth received by server");
                 //Login successful
                 //const userData = await attempt.json();
                 this.appRoot.innerHTML = '';
-                await this._context.login()
+                await this._context.login();
             }
         } catch (error){
             console.error('Login attempt failed:', error);

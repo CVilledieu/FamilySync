@@ -9,18 +9,18 @@ export class app {
         this.authCtx = auth;
         this.userData = null;
         this.widgetList = [];
-
+        this.homeWidget = null;
         this.#init();   
     }
 
     #init(){
         this.#loadWidgetList();
         this.#buildHomePage();
-        this.loadFrame();
+        this.homeWidget = new Home(this);
+        this.loadWidget(this.homeWidget);
     }
 
     #loadWidgetList(){
-        this.widgetList.push(new Home(this));
         this.widgetList.push(new Calendar(this));
         //Future: Load additional widgets dynamically
     }
@@ -53,9 +53,6 @@ export class app {
 
     async returnHome(){
         this.clearFrame();
-        const homeWidget = this.widgetList.find(w => w.Name === 'Home');
-        if (homeWidget) {
-            this.frameRoot.appendChild(await homeWidget.render());
-        }
+        this.loadWidget(this.homeWidget);
     }
 }

@@ -25,31 +25,44 @@ func StartServer() {
 	// Initialize database
 	db = InitConnection()
 
-	// Serv static files
-	e.Static("", "/app/public")
+	// Serve static files for authenticated users (from ./app/private)
+	e.Use(serve_Authenticated_Static())
+	e.Use(serve_Public_Static())
 
-	// Serve files for UNauthenticated users (from ./public/login)
-	e.Use(serve_Auth_Static())
-
-	// Routes
 	e.GET("/", renderIndex)
-	e.GET("/auth", updatePage)
+	e.GET("/auth", authCheck)
 	e.GET("/api", getAppData)
 
-	// Start server
 	var PORT = getPort()
-
 	e.Logger.Fatal(e.Start(PORT))
 }
 
-// Static file serving middleware based on authentication status
-func serve_Auth_Static() echo.MiddlewareFunc {
+func serve_Public_Static() echo.MiddlewareFunc {
+	return middleware.StaticWithConfig(middleware.StaticConfig{
+		Root: "./app/public",
+	})
+}
+
+// Static file serving middleware for authenticated users (serves private files)
+func serve_Authenticated_Static() echo.MiddlewareFunc {
 	return middleware.StaticWithConfig(middleware.StaticConfig{
 		Root: "./app/private",
 		Skipper: func(c echo.Context) bool {
 			return !isAuthenticated(c) // Skip if NOT authenticated
 		},
 	})
+}
+
+// Authentication check for middleware. Adjusting static file serving based on auth status
+func isAuthenticated(c echo.Context) bool {
+	// username := c.QueryParam("username")
+	// password := c.QueryParam("password")
+	// valid := tempValidatingFunction(username, password)
+	// if valid {
+	// 	return true
+	// }
+	// For now, return false (not authenticated) to test unauthenticated flow
+	return true
 }
 
 // getPort checks for a command line argument "-port" to set the server port.

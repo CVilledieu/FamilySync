@@ -1,6 +1,4 @@
-import { createElement } from "react";
-
-export default class CalendarWidget{
+export class CalendarWidget{
     constructor(app){
         this.appCtx = app;
         this.name = 'Calendar';
@@ -10,9 +8,16 @@ export default class CalendarWidget{
         this.calendarObj = null;
         
     }
-    async render(){
+    init(){
         this.buildMenu();
         this.buildCalendar();
+    }
+
+    async render(){
+        const menu = this.menuObj.render();
+        this.element.appendChild(menu);
+        const calendar = this.calendarObj.render();
+        this.element.appendChild(calendar);
         return this.element;
     }
 
@@ -42,6 +47,7 @@ class MenuObj{
     }
     //Temporarily hardcoded components for the menu.
     init(){
+
         const exit = this.exitWidgetBtn();
         this.element.appendChild(exit);
     }
@@ -167,7 +173,7 @@ class CalendarObj{
 }
 
 function dayFactory(){
-    const container = createElement('div');
+    const container = document.createElement('div');
     container.classList.add('day-container');
 
     const dateField = document.createElement('div');

@@ -24,9 +24,9 @@ class auth {
     }
 
     async login(){
-        try {
-            const { mainApp } = await import('/main.js');
-            new mainApp(this);
+        try {            
+            const { app } = await import('/main.js');
+            new app(this);
         } catch (error) {
             console.error("Error during login process:", error);
             // Default to login page if main app fails to load
@@ -48,9 +48,8 @@ class auth {
         catch (error) {
             console.log("Authentication failed:", error);
             this._auth = null;
-            return false;
         }
-        
+        return false;
     }
 
     //Temp logout process
