@@ -93,6 +93,7 @@ class CalendarObj{
     }
     init(){
         this.buildNavigationBar();
+        this.buildWeekDayHeader();
         this.buildCalendarGrid();
     }
 
@@ -102,17 +103,57 @@ class CalendarObj{
         const nav = document.createElement('div');
         nav.classList.add('calendar-navigation');
 
+        const prevBtn = document.createElement('button');
+        prevBtn.classList.add('nav-button');
+        prevBtn.innerHTML = '&#8249';
+        prevBtn.addEventListener('click',);
+
         const monthYear = document.createElement('h2');
         monthYear.classList.add('calendar-month-year');
         this.navTitle = monthYear;
 
-        const prevBtn = document.createElement('button');
-        prevBtn.classList.add('nav-button');
-        prevBtn.innerHTML = '&#8249';
-        prevBtn.addEventListener('click',)
+        const nextBtn = document.createElement('button');
+        nextBtn.classList.add('nav-button');
+        nextBtn.innerHTML = '&#8250';
+        nextBtn.addEventListener('click',);
+
+        nav.appendChild(prevBtn);
+        nav.appendChild(monthYear);
+        nav.appendChild(nextBtn);
 
         this.element.appendChild(nav);
     }
 
-    buildCalendarGrid(){}
+    buildWeekDayHeader(){
+        const WeekdayHeader = document.createElement('div');
+        WeekdayHeader.classList.add('calendar-weekday-container');
+        DAYS.forEach(day => {
+            const dayElem = document.createElement('div');
+            dayElem.classList.add('calendar-weekday-header');
+            dayElem.textContent = day;
+            WeekdayHeader.appendChild(dayElem);
+        });
+        this.element.appendChild(WeekdayHeader);
+    }
+
+    buildCalendarGrid(){
+        const gridDisplay = document.createElement('div');
+        gridDisplay.classList.add('calendar-grid-display');
+
+        const fragment = document.createDocumentFragment();
+        for (let i=0; i<MAX_CELLS; i++){
+            const cell = new Cell()
+        }
+
+
+
+        this.element.appendChild(gridDisplay);
+    }
 }
+
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONTHS = [
+    'January', 'February', 'March', 'April', 'May', 'June', 
+    'July', 'August', 'September', 'October', 'November', 'December'
+];
+const MAX_CELLS = 42; // 6 weeks
