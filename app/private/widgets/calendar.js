@@ -151,9 +151,9 @@ class CalendarObj{
 
     buildEmptyDays(){
         for (let i = 0; i < MAX_CELLS; i++){
-            const container = createElement('div');
-            container.classList.add('calendar-day-cell');
-            container.addEventListener('click', this.focus(i));
+            const day = dayFactory();
+            day.element.addEventListener('click', () => this.focus(i));
+            this.days.push(day);
         }
     }
 
@@ -163,10 +163,28 @@ class CalendarObj{
         this.days[this.focus].classList.add('focus');
     }
 
-    hydrateDays(){
 
-    }
+}
 
+function dayFactory(){
+    const container = createElement('div');
+    container.classList.add('day-container');
+
+    const dateField = document.createElement('div');
+    dateField.classList.add('day-date');
+
+    const events = document.createElement('div');
+    events.classList.add('day-event');
+
+    container.appendChild(dateField);
+    container.appendChild(events);
+
+    const dayObj = {
+        element: container,
+        date: dateField,
+        events: events,
+    };
+    return dayObj;
 }
 
 
