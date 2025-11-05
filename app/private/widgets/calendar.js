@@ -1,0 +1,118 @@
+export default class CalendarWidget{
+    constructor(app){
+        this.appCtx = app;
+        this.name = 'Calendar';
+        this.element = document.createElement('div');
+        this.element.classList.add('widget-calendar');
+        this.menuObj = null;
+        this.calendarObj = null;
+        
+    }
+    async render(){
+        this.buildMenu();
+        this.buildCalendar();
+        return this.element;
+    }
+
+    buildMenu(){
+        this.menuObj= new MenuObj(this.appCtx);
+        this.element.appendChild(this.menuObj.render());
+    }
+
+    buildCalendar(){
+        this.calendarObj = new CalendarObj();
+        this.element.appendChild(this.calendarObj.element);
+    }
+}
+
+
+//At initialization, adds correct components to an array.
+//Render() appends them to the menu element.
+//This is to be able to dynamically build the menu based on user settings or permissions.
+class MenuObj{
+    constructor(app){
+        this.appCtx = app;
+        this.element = document.createElement('div');
+        this.element.classList.add('calendar-menu');
+        this.components = [];
+        this.viewableComponents = ['calendarSelector', 'viewSelector', 'addEvent', 'divider', 'exitWidgetBtn'];
+        this.init();
+    }
+    //Temporarily hardcoded components for the menu.
+    init(){
+        const exit = this.exitWidgetBtn();
+        this.element.appendChild(exit);
+    }
+
+    render(){
+        return this.element;
+    }
+
+    //Updates menu components based on user settings or permissions.
+    updateComponents(){}
+    
+    //Menu Components
+
+    //Changes which calendar is being viewed.
+    //Left as a stub for now until multiple calendars are implemented.
+    calendarSelector(){}
+
+    //Changes the calendar view (Month, Week, Day)
+    viewSelector(){}
+
+    //Adds event to the calendar.
+    addEvent(){}
+
+
+    divider(){
+        const div = document.createElement('hr');
+        div.classList.add('menu-divider');
+        return div;
+    }
+
+    exitWidgetBtn(){
+        const btn = document.createElement('button');
+        btn.textContent = 'Exit Calendar';
+        btn.classList.add('exit-calendar-btn');
+        btn.addEventListener('click', () => this.appCtx.returnHome());
+        return btn;
+    }
+}
+
+class CalendarObj{
+    constructor(){
+        this.element = document.createElement('div');
+        this.element.classList.add('calendar-obj');
+        this.days = [];
+        this.selectedCell = null;
+        this.currentDate = new Date();
+        this.displayedDate = new Date();
+        this.navTitle = null;
+
+        this.init();
+    }
+    init(){
+        this.buildNavigationBar();
+        this.buildCalendarGrid();
+    }
+
+    //Contains navigation buttons and displays current month/year   
+    //navigation buttons move forward/backward through months
+    buildNavigationBar(){
+        const nav = document.createElement('div');
+        nav.classList.add('calendar-navigation');
+
+        const monthYear = document.createElement('h2');
+        monthYear.classList.add('calendar-month-year');
+        this.navTitle = monthYear;
+
+        const prevBtn = document.createElement('button');
+        prevBtn.classList.add('nav-button');
+        prevBtn.innerHTML = '&#8249';
+        prevBtn.addEventListener('click',)
+
+        this.element.appendChild(nav);
+    }
+
+    buildCalendarGrid(){}
+}
