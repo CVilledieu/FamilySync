@@ -1,3 +1,5 @@
+import { createElement } from "react";
+
 export default class CalendarWidget{
     constructor(app){
         this.appCtx = app;
@@ -21,7 +23,7 @@ export default class CalendarWidget{
 
     buildCalendar(){
         this.calendarObj = new CalendarObj();
-        this.element.appendChild(this.calendarObj.element);
+        this.element.appendChild(this.calendarObj.render());
     }
 }
 
@@ -79,12 +81,14 @@ class MenuObj{
     }
 }
 
+
+
 class CalendarObj{
     constructor(){
         this.element = document.createElement('div');
         this.element.classList.add('calendar-obj');
         this.days = [];
-        this.selectedCell = null;
+        this.focus = null;
         this.currentDate = new Date();
         this.displayedDate = new Date();
         this.navTitle = null;
@@ -95,6 +99,15 @@ class CalendarObj{
         this.buildNavigationBar();
         this.buildWeekDayHeader();
         this.buildCalendarGrid();
+    }
+    render(){
+        const fragment = document.createDocumentFragment();
+        this.days.forEach(day =>{
+            //Possibly update with new info
+            fragment.appendChild(day);
+        });
+        this.element.appendChild(fragment);
+        return this.element;
     }
 
     //Contains navigation buttons and displays current month/year   
@@ -136,20 +149,26 @@ class CalendarObj{
         this.element.appendChild(WeekdayHeader);
     }
 
-    buildCalendarGrid(){
-        const gridDisplay = document.createElement('div');
-        gridDisplay.classList.add('calendar-grid-display');
-
-        const fragment = document.createDocumentFragment();
-        for (let i=0; i<MAX_CELLS; i++){
-            const cell = new Cell()
+    buildEmptyDays(){
+        for (let i = 0; i < MAX_CELLS; i++){
+            const container = createElement('div');
+            container.classList.add('calendar-day-cell');
+            container.addEventListener('click', this.focus(i));
         }
-
-
-
-        this.element.appendChild(gridDisplay);
     }
+
+    focus(index){
+        this.days[this.focus].classList.remove('focus');
+        this.focus = index;
+        this.days[this.focus].classList.add('focus');
+    }
+
+    hydrateDays(){
+
+    }
+
 }
+
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTHS = [
