@@ -112,7 +112,7 @@ class loginWidget {
             const res = await this.app._server.manualLogin(parameters.username, parameters.password);
             if (res && res.ok) {
                 console.log("Login successful");
-                const { HomeWidget } = await import('./HomeWidget.js');
+                const { HomeWidget } = await import('./widgets/Home.js');
                 this.app.HomeWidget = new HomeWidget(this.app);
                 this.app.loadWidget(this.app.HomeWidget);
             }

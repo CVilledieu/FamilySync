@@ -1,5 +1,5 @@
 
-export class Home {
+export class HomeWidget {
     constructor(appCtx){
         this.AppCtx = appCtx;
         this.FrameRoot = appCtx.frameRoot;
@@ -25,16 +25,3 @@ export class Home {
         return widgetDiv;
     }
 }
-
-export class LogoutWidget{
-    constructor(appCtx){
-        this.AppCtx = appCtx;
-        this.Name = 'Logout';
-    }
-    render(){
-        this.AppCtx.mainRoot.innerHTML = '';
-        this.AppCtx.authCtx.logout();
-        return null;
-    }
-}
-
