@@ -1,16 +1,23 @@
 export class CalendarWidget{
-    constructor(app){
-        this.appCtx = app;
-        this.name = 'Calendar';
+    constructor(App){
+        this.AppCtx = App;
+        this.Name = 'Calendar';
         this.element = document.createElement('div');
         this.element.classList.add('widget-calendar');
+
         this.menuObj = null;
         this.calendarObj = null;
-        
+
+        this.State = null;
+
+        this.init();
     }
     init(){
+        this.State = new stateCtx(this.AppCtx);
         this.buildMenu();
-        this.buildCalendar();
+        this.buildCalendarObj();
+        // Initialize the calendar with current date
+        this.State.updateCalendarDays();
     }
 
     async render(){
@@ -22,55 +29,188 @@ export class CalendarWidget{
     }
 
     buildMenu(){
-        this.menuObj= new MenuObj(this.appCtx);
+        this.menuObj= new MenuObj(this.State);
         this.element.appendChild(this.menuObj.render());
     }
 
-    buildCalendar(){
-        this.calendarObj = new CalendarObj();
+    
+    buildCalendarObj(){
+        this.calendarObj = new CalendarObj(this.State);
         this.element.appendChild(this.calendarObj.render());
+    }
+
+}
+
+class stateCtx {
+    constructor(AppCtx){
+        this.Today = new Date();
+        this.DisplayedDate = new Date();
+        this.MonthYearTitle = null;
+        this.focus = null;
+        this.days = [];
+        this.ActiveMenuComponents = [];
+        this.ExitFunc = ()=> {AppCtx.returnHome()};
+        
+        // Initialize the month/year title
+        this.updateMonthYearTitle();
+    }
+    
+    updateMonthYearTitle(){
+        const month = MONTHS[this.DisplayedDate.getMonth()];
+        const year = this.DisplayedDate.getFullYear();
+        const titleText = `${month} ${year}`;
+        
+        if (this.MonthYearTitle) {
+            this.MonthYearTitle.textContent = titleText;
+        }
+        
+        return titleText;
+    }
+    
+    navigateMonth(direction) {
+        // direction: 1 for next month, -1 for previous month
+        const currentMonth = this.DisplayedDate.getMonth();
+        const currentYear = this.DisplayedDate.getFullYear();
+        
+        this.DisplayedDate = new Date(currentYear, currentMonth + direction, 1);
+        this.updateMonthYearTitle();
+        this.updateCalendarDays();
+    }
+    
+    updateCalendarDays(direction = null){
+        // If direction is provided, navigate first
+        if (direction !== null) {
+            this.navigateMonth(direction);
+            return;
+        }
+        
+        const year = this.DisplayedDate.getFullYear();
+        const month = this.DisplayedDate.getMonth();
+        
+        // First day of the month
+        const firstDay = new Date(year, month, 1);
+        // Last day of the month
+        const lastDay = new Date(year, month + 1, 0);
+        
+        // Starting day of the week (0 = Sunday)
+        const startDayOfWeek = firstDay.getDay();
+        
+        // Clear existing day contents
+        this.days.forEach(day => {
+            day.date.textContent = '';
+            day.list.innerHTML = '';
+            day.element.classList.remove('current-month', 'other-month', 'today');
+        });
+        
+        // Calculate dates for previous month's trailing days
+        const prevMonth = new Date(year, month, 0);
+        const prevMonthLastDate = prevMonth.getDate();
+        
+        let dayIndex = 0;
+        
+        // Fill in previous month's trailing days
+        for (let i = startDayOfWeek - 1; i >= 0; i--) {
+            const date = prevMonthLastDate - i;
+            this.days[dayIndex].date.textContent = date;
+            this.days[dayIndex].element.classList.add('other-month');
+            dayIndex++;
+        }
+        
+        // Fill in current month's days
+        for (let date = 1; date <= lastDay.getDate(); date++) {
+            this.days[dayIndex].date.textContent = date;
+            this.days[dayIndex].element.classList.add('current-month');
+            
+            // Check if this is today
+            const currentDate = new Date(year, month, date);
+            if (this.isSameDay(currentDate, this.Today)) {
+                this.days[dayIndex].element.classList.add('today');
+            }
+            
+            dayIndex++;
+        }
+        
+        // Fill in next month's leading days
+        let nextMonthDate = 1;
+        while (dayIndex < MAX_CELLS) {
+            this.days[dayIndex].date.textContent = nextMonthDate;
+            this.days[dayIndex].element.classList.add('other-month');
+            nextMonthDate++;
+            dayIndex++;
+        }
+    }
+    
+    isSameDay(date1, date2) {
+        return date1.getFullYear() === date2.getFullYear() &&
+               date1.getMonth() === date2.getMonth() &&
+               date1.getDate() === date2.getDate();
     }
 }
 
-
-//At initialization, adds correct components to an array.
-//Render() appends them to the menu element.
-//This is to be able to dynamically build the menu based on user settings or permissions.
 class MenuObj{
-    constructor(app){
-        this.appCtx = app;
+    constructor(State){
+        this.State = State;
         this.element = document.createElement('div');
         this.element.classList.add('calendar-menu');
-        this.components = [];
-        this.viewableComponents = ['calendarSelector', 'viewSelector', 'addEvent', 'divider', 'exitWidgetBtn'];
+        this.Components = [];
         this.init();
     }
-    //Temporarily hardcoded components for the menu.
-    init(){
 
-        const exit = this.exitWidgetBtn();
-        this.element.appendChild(exit);
+    //Components will contain an initialized version
+    //Render will be updated to read from a different array that will be dynamically updated by the state
+    init(){
+        this.Components.push(this.dateTitle());
+        this.Components.push(this.navBtns());
+        this.Components.push(this.exitWidgetBtn());
     }
 
     render(){
+        this.element.innerHTML = '';
+        const fragment = document.createDocumentFragment();
+        this.Components.forEach(item =>{
+            fragment.appendChild(item);
+        });
+        this.element.appendChild(fragment);
         return this.element;
     }
 
-    //Updates menu components based on user settings or permissions.
-    updateComponents(){}
-    
-    //Menu Components
+    dateTitle(){
+        const titleContainer = document.createElement('div');
+        titleContainer.classList.add('menu-date-container');
 
-    //Changes which calendar is being viewed.
-    //Left as a stub for now until multiple calendars are implemented.
-    calendarSelector(){}
+        const dateHeader = document.createElement('h2');
+        dateHeader.classList.add('menu-date-header');
+        
+        // Set the title from state and store reference
+        this.State.MonthYearTitle = dateHeader;
+        dateHeader.textContent = this.State.updateMonthYearTitle();
 
-    //Changes the calendar view (Month, Week, Day)
-    viewSelector(){}
+        titleContainer.appendChild(dateHeader);
+        return titleContainer;
+    }
 
-    //Adds event to the calendar.
-    addEvent(){}
+    navBtns(){
+        const navContainer = document.createElement('div');
+        navContainer.classList.add('menu-nav-container');
+        
+        const prevBtn = document.createElement('button');
+        prevBtn.classList.add('nav-button');
+        prevBtn.innerHTML = '&#8249';
+        prevBtn.addEventListener('click', () => {
+            this.State.updateCalendarDays(-1);
+        });
 
+        const nextBtn = document.createElement('button');
+        nextBtn.classList.add('nav-button');
+        nextBtn.innerHTML = '&#8250';
+        nextBtn.addEventListener('click', () => {
+            this.State.updateCalendarDays(1);
+        });
+
+        navContainer.appendChild(prevBtn);
+        navContainer.appendChild(nextBtn);
+        return navContainer;
+    }
 
     divider(){
         const div = document.createElement('hr');
@@ -82,7 +222,7 @@ class MenuObj{
         const btn = document.createElement('button');
         btn.textContent = 'Exit Calendar';
         btn.classList.add('exit-calendar-btn');
-        btn.addEventListener('click', () => this.appCtx.returnHome());
+        btn.addEventListener('click', this.State.ExitFunc);
         return btn;
     }
 }
@@ -90,57 +230,27 @@ class MenuObj{
 
 
 class CalendarObj{
-    constructor(){
+    constructor(State){
         this.element = document.createElement('div');
         this.element.classList.add('calendar-obj');
-        this.days = [];
-        this.focus = null;
-        this.currentDate = new Date();
-        this.displayedDate = new Date();
-        this.navTitle = null;
-
+        this.calendarBody = null;
+        this.State = State;
         this.init();
     }
+
     init(){
-        this.buildNavigationBar();
         this.buildWeekDayHeader();
-        this.buildCalendarGrid();
+        this.buildCalendarBody()
     }
     render(){
+        this.calendarBody.innerHTML = '';
         const fragment = document.createDocumentFragment();
-        this.days.forEach(day =>{
+        this.State.days.forEach(day =>{
             //Possibly update with new info
-            fragment.appendChild(day);
+            fragment.appendChild(day.element);
         });
-        this.element.appendChild(fragment);
+        this.calendarBody.appendChild(fragment);
         return this.element;
-    }
-
-    //Contains navigation buttons and displays current month/year   
-    //navigation buttons move forward/backward through months
-    buildNavigationBar(){
-        const nav = document.createElement('div');
-        nav.classList.add('calendar-navigation');
-
-        const prevBtn = document.createElement('button');
-        prevBtn.classList.add('nav-button');
-        prevBtn.innerHTML = '&#8249';
-        prevBtn.addEventListener('click',);
-
-        const monthYear = document.createElement('h2');
-        monthYear.classList.add('calendar-month-year');
-        this.navTitle = monthYear;
-
-        const nextBtn = document.createElement('button');
-        nextBtn.classList.add('nav-button');
-        nextBtn.innerHTML = '&#8250';
-        nextBtn.addEventListener('click',);
-
-        nav.appendChild(prevBtn);
-        nav.appendChild(monthYear);
-        nav.appendChild(nextBtn);
-
-        this.element.appendChild(nav);
     }
 
     buildWeekDayHeader(){
@@ -155,42 +265,48 @@ class CalendarObj{
         this.element.appendChild(WeekdayHeader);
     }
 
-    buildEmptyDays(){
+    buildCalendarBody(){
+        this.calendarBody = document.createElement('div');
+        this.calendarBody.classList.add('calendar-body');
+        this.element.appendChild(this.calendarBody);
+
         for (let i = 0; i < MAX_CELLS; i++){
-            const day = dayFactory();
-            day.element.addEventListener('click', () => this.focus(i));
-            this.days.push(day);
+            const day = new Day;
+            this.State.days.push(day);
         }
     }
-
-    focus(index){
-        this.days[this.focus].classList.remove('focus');
-        this.focus = index;
-        this.days[this.focus].classList.add('focus');
-    }
-
-
 }
 
-function dayFactory(){
-    const container = document.createElement('div');
-    container.classList.add('day-container');
+class Day {
+    constructor(){
+        this.element = document.createElement('div');
+        this.element.classList.add('day-container');
+        this.date = null;
+        this.list = null;
+        this.init();
+    }
+    init(){
+        const dateField = document.createElement('div');
+        dateField.classList.add('day-date');
+        this.date = dateField;
+        const list = document.createElement('div');
+        list.classList.add('day-list');
+        this.list = list;
+        this.element.appendChild(dateField);
+        this.element.appendChild(list);
+    }
+    setDate(date){
+        this.date.textContent = date;
+    }
+    setEvents(list){
+        list.forEach(item =>{
+            const div = document.createElement('div');
+            div.classList.add('day-list-event');
+            div.textContent = item;
+            this.list.appendChild(div);
+        });
+    }
 
-    const dateField = document.createElement('div');
-    dateField.classList.add('day-date');
-
-    const events = document.createElement('div');
-    events.classList.add('day-event');
-
-    container.appendChild(dateField);
-    container.appendChild(events);
-
-    const dayObj = {
-        element: container,
-        date: dateField,
-        events: events,
-    };
-    return dayObj;
 }
 
 

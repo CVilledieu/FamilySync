@@ -3,6 +3,7 @@ tmp/
 deprecated/
 non_public/
 database/
+node_modules/
 
 # Files
 .air.toml

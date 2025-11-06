@@ -26,47 +26,24 @@ func StartServer() {
 	db = InitConnection()
 
 	// Serve static files for authenticated users (from ./app/private)
-	e.Use(serve_Authenticated_Static())
 	e.Use(serve_Public_Static())
 
-	e.GET("/", renderIndex)
-	e.GET("/auth", authCheck)
-	e.GET("/api", getAppData)
+	e.GET("/", newRequest)
+
+	eg := e.Group("/api")
+	postAuthGroup(eg)
 
 	var PORT = getPort()
 	e.Logger.Fatal(e.Start(PORT))
 }
 
+// File serving based on authentication
 func serve_Public_Static() echo.MiddlewareFunc {
 	return middleware.StaticWithConfig(middleware.StaticConfig{
 		Root: "./app/public",
 	})
 }
 
-// Static file serving middleware for authenticated users (serves private files)
-func serve_Authenticated_Static() echo.MiddlewareFunc {
-	return middleware.StaticWithConfig(middleware.StaticConfig{
-		Root: "./app/private",
-		Skipper: func(c echo.Context) bool {
-			return !isAuthenticated(c) // Skip if NOT authenticated
-		},
-	})
-}
-
-// Authentication check for middleware. Adjusting static file serving based on auth status
-func isAuthenticated(c echo.Context) bool {
-	// username := c.QueryParam("username")
-	// password := c.QueryParam("password")
-	// valid := tempValidatingFunction(username, password)
-	// if valid {
-	// 	return true
-	// }
-	// For now, return false (not authenticated) to test unauthenticated flow
-	return true
-}
-
-// getPort checks for a command line argument "-port" to set the server port.
-// If not provided, it defaults to ":6969".
 func getPort() string {
 	portFlag := flag.String("port", "", "Port to run the server on")
 

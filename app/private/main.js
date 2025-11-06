@@ -1,4 +1,4 @@
-import { Home } from '/widgets/home.js';
+import { Home, LogoutWidget } from '/widgets/home.js';
 import { CalendarWidget as Calendar } from '/widgets/calendar.js';
 
 export class app {
@@ -14,14 +14,13 @@ export class app {
     }
 
     #init(){
-        this.#loadWidgetList();
+        this.#buildWidgetList();
         this.#buildHomePage();
-        this.homeWidget = new Home(this);
-        this.loadWidget(this.homeWidget);
     }
 
-    #loadWidgetList(){
+    #buildWidgetList(){
         this.widgetList.push(new Calendar(this));
+        this.widgetList.push(new LogoutWidget(this));
         //Future: Load additional widgets dynamically
     }
 
@@ -35,6 +34,9 @@ export class app {
         
         this.frameRoot.classList.add('frame-root');
         this.mainRoot.appendChild(this.frameRoot);
+
+        this.homeWidget = new Home(this);
+        this.loadWidget(this.homeWidget);
     }
 
     //Clears out any content within the dashboard-root
@@ -45,7 +47,11 @@ export class app {
     async loadWidget(widget){
         this.clearFrame();
         try {
-            this.frameRoot.appendChild(await widget.render());
+            const element = await widget.render();
+            if (element != null){
+                this.frameRoot.appendChild(element);
+            }
+            
         }catch (error) {
             console.error('Error loading frame content:', error);
         }

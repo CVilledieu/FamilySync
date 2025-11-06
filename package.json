@@ -1,0 +1,24 @@
+{
+  "name": "familysync",
+  "version": "1.0.0",
+  "description": "Backend: \r - Golang\r - Echo framework\r - Tursodb",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "vite build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CVilledieu/FamilySync.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CVilledieu/FamilySync/issues"
+  },
+  "homepage": "https://github.com/CVilledieu/FamilySync#readme",
+  "devDependencies": {
+    "vite": "^7.2.0"
+  }
+}

@@ -6,13 +6,24 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// Server interaction flow:
+// Client sends init request. ("/", newRequest) sends back ok and client is served basic static files
+// Client checks for session tokens. ("/session", verifyToken)
+// If no tokens client moves to login screen via client side scripting. Client then sends ("/login", verifyLogin)
+//
+
+func postAuthGroup(e *echo.Group) {
+	e.Use(serve_Authenticated_Static())
+	e.GET("/", logginSuccess)
+}
+
 // Page renderers
 // --------------------
-func renderIndex(c echo.Context) error {
+func newRequest(c echo.Context) error {
 	return c.Render(http.StatusOK, "index", nil)
 }
 
-func authCheck(c echo.Context) error {
+func logginSuccess(c echo.Context) error {
 	return c.String(http.StatusOK, "")
 }
 

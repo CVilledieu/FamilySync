@@ -1,0 +1,406 @@
+/* Calendar Menu - VS Code Dark Modern Theme */
+.calendar-menu {
+    background: #252526;
+    border-radius: 4px;
+    padding: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    border: 1px solid #3e3e42;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 280px;
+    max-width: 320px;
+    height: fit-content;
+    flex-shrink: 0;
+    order: 2;
+}
+
+/* Menu Navigation Container */
+.menu-nav-container {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+}
+
+.calendar-menu::before {
+    display: none;
+}
+
+.menu-divider {
+    border: none;
+    height: 1px;
+    background: #3e3e42;
+    margin: 8px 0;
+}
+
+/* Calendar Container - VS Code Dark Modern */
+.widget-calendar {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    flex: 1;
+    gap: 20px;
+    overflow: hidden;
+    padding: 16px;
+    background: #1e1e1e;
+}
+
+/* Main Content Area - Calendar Object */
+.calendar-obj {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+    background: #252526;
+    border-radius: 4px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    border: 1px solid #3e3e42;
+}
+
+
+/* Calendar Navigation - VS Code Dark Modern */
+.calendar-navigation {
+    background: #2d2d30;
+    color: #cccccc;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #3e3e42;
+}
+
+.calendar-navigation h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #cccccc;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.nav-button {
+    background: #3e3e42;
+    border: 1px solid #5a5a5d;
+    color: #cccccc;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 400;
+    transition: all 0.2s ease;
+    min-width: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
+}
+
+.nav-button:hover {
+    background: #007acc;
+    border-color: #007acc;
+    color: white;
+}
+
+.nav-button:active {
+    background: #005a9e;
+}
+
+/* Days of Week Header - VS Code Dark Modern */
+.calendar-weekday-container {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: #2d2d30;
+    border-bottom: 1px solid #3e3e42;
+}
+
+.calendar-weekday-header{
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 600;
+    color: #9d9d9d;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Calendar Grid - VS Code Dark Modern */
+.calendar-body {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    background: #1e1e1e;
+}
+
+.day-container {
+    border: 1px solid #3e3e42;
+    padding: 8px;
+    background: #252526;
+    transition: all 0.2s ease;
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    color: #cccccc;
+    overflow: hidden;
+}
+
+.day-container:hover {
+    background: #2d2d30;
+    border-color: #007acc;
+}
+
+.day-container.other-month {
+    background: #1e1e1e;
+    color: #6a6a6a;
+}
+
+.day-container.other-month .day-date {
+    color: #6a6a6a;
+}
+
+.day-container.today {
+    background: #007acc;
+    color: white;
+    font-weight: bold;
+}
+
+.day-container.today .day-date {
+    color: white;
+}
+
+.day-container.today:hover {
+    background: #005a9e;
+}
+
+.day-container.focus {
+    border: 2px solid #007acc;
+    box-shadow: 0 0 0 1px #007acc;
+}
+
+.day-container.today.focus {
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Day-specific styling for calendar */
+.day-date {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 4px;
+    flex-shrink: 0;
+}
+
+.day-event {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+}
+
+/* Exit Calendar Button */
+.exit-calendar-btn {
+    background: #007acc;
+    border: 1px solid #007acc;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 400;
+    transition: all 0.2s ease;
+    box-shadow: none;
+    width: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.exit-calendar-btn:hover {
+    background: #005a9e;
+    border-color: #005a9e;
+}
+
+.exit-calendar-btn:active {
+    background: #004578;
+}
+
+
+/* Dropdown styles from elements.js - VS Code Dark Modern */
+.dropdown {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.dropdown label {
+    font-weight: 400;
+    color: #cccccc;
+    font-size: 0.9rem;
+}
+
+.dropdown select {
+    padding: 6px 8px;
+    border: 1px solid #3e3e42;
+    border-radius: 4px;
+    background: #1e1e1e;
+    font-size: 0.9rem;
+    color: #cccccc;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23cccccc' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 8px center;
+    background-repeat: no-repeat;
+    background-size: 14px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.dropdown select:focus {
+    outline: none;
+    border-color: #007acc;
+    box-shadow: 0 0 0 1px #007acc;
+    background: #1e1e1e;
+}
+
+/* Responsive Design - Enhanced */
+@media (max-width: 768px) {
+    .widget-calendar {
+        flex-direction: column;
+        gap: 20px;
+        padding: 16px;
+    }
+    
+    .calendar-menu {
+        order: -1;
+        min-width: auto;
+        max-width: none;
+        padding: 20px;
+    }
+    
+    .calendar-navigation {
+        padding: 20px 24px;
+    }
+    
+    .calendar-navigation h2 {
+        font-size: 1.5rem;
+    }
+    
+    .nav-button {
+        padding: 10px 16px;
+        font-size: 1rem;
+    }
+    
+    .day-container {
+        padding: 8px;
+    }
+    
+    .day-date {
+        font-size: 1rem;
+    }
+    
+    .calendar-weekday-header {
+        padding: 12px 8px;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .widget-calendar {
+        padding: 12px;
+        gap: 16px;
+    }
+    
+    .calendar-menu {
+        padding: 16px;
+    }
+    
+    .calendar-navigation {
+        padding: 16px 20px;
+    }
+    
+    .calendar-navigation h2 {
+        font-size: 1.25rem;
+    }
+    
+    .nav-button {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        min-width: 40px;
+    }
+    
+    .day-container {
+        padding: 6px;
+    }
+    
+    .day-date {
+        font-size: 0.95rem;
+        margin-bottom: 4px;
+    }
+    
+    .calendar-weekday-header {
+        padding: 10px 6px;
+        font-size: 0.75rem;
+    }
+    
+    .dropdown select {
+        padding: 10px 14px;
+        font-size: 0.95rem;
+    }
+    
+    .exit-calendar-btn {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Widget Animations */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.widget-calendar {
+    animation: slideIn 0.5s ease-out;
+}
+
+.calendar-menu {
+    animation: slideIn 0.6s ease-out;
+}
+
+/* Focus and Accessibility Enhancements - VS Code Dark Modern */
+.nav-button:focus,
+.dropdown select:focus,
+.exit-calendar-btn:focus {
+    outline: 2px solid #007acc;
+    outline-offset: 2px;
+}
+
+/* Calendar Month Year Title - VS Code Dark Modern */
+.calendar-month-year {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #cccccc;
+    margin: 0;
+    letter-spacing: 0.02em;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Improved Visual Hierarchy - VS Code Dark Modern */
+.day-container:nth-child(7n-6) { /* Sunday cells */
+    border-left: 2px solid rgba(204, 204, 204, 0.2);
+}
+
+.day-container:nth-child(7n) { /* Saturday cells */
+    border-right: 2px solid rgba(204, 204, 204, 0.2);
+}
+
