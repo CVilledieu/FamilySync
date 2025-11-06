@@ -52,6 +52,108 @@ body {
     overflow: hidden;
 }
 
+/* Login Widget - Takes full space of frame-root */
+.widget-login {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background: #1e1e1e;
+}
+
+/* Login Prompt - Centered within widget-login */
+.login-prompt {
+    width: 400px;
+    max-width: 90vw;
+    background: #252526;
+    border: 1px solid #3e3e42;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #cccccc;
+    font-size: 1rem;
+    gap: 20px;
+    padding: 32px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 1;
+}
+
+
+.login-prompt:hover {
+    border-color: #007acc;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.login-prompt label {
+    color: #cccccc;
+    font-weight: 400;
+    margin-bottom: 4px;
+    align-self: flex-start;
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+.login-prompt input[type="text"],
+.login-prompt input[type="password"] {
+    width: 100%;
+    padding: 8px 12px;
+    background: #1e1e1e;
+    border: 1px solid #3e3e42;
+    border-radius: 4px;
+    color: #cccccc;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    margin-bottom: 4px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.login-prompt input[type="text"]::placeholder,
+.login-prompt input[type="password"]::placeholder {
+    color: #6a6a6a;
+}
+
+.login-prompt input[type="text"]:focus,
+.login-prompt input[type="password"]:focus {
+    outline: none;
+    border-color: #007acc;
+    background: #1e1e1e;
+    box-shadow: 0 0 0 1px #007acc;
+}
+
+.login-button {
+    background: #007acc;
+    border: 1px solid #007acc;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 400;
+    transition: all 0.2s ease;
+    box-shadow: none;
+    width: 100%;
+    margin-top: 8px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.login-button::before {
+    display: none;
+}
+
+.login-button:hover {
+    background: #005a9e;
+    border-color: #005a9e;
+}
+
+.login-button:active {
+    background: #004578;
+}
+
 /* Home Widget Dashboard Items */
 .widget-home {
     display: flex;
@@ -116,132 +218,6 @@ body {
     transition: all 0.1s ease;
 }
 
-/* Login Screen Styles */
-.login-page {
-    min-width: 100vw;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #1e1e1e;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    position: relative;
-}
-
-.login-page::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: transparent;
-    pointer-events: none;
-}
-
-.login-panel {
-    width: 400px;
-    max-width: 90vw;
-    background: #252526;
-    border: 1px solid #3e3e42;
-    border-radius: 4px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: #cccccc;
-    font-size: 1rem;
-    gap: 20px;
-    padding: 32px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    position: relative;
-    z-index: 1;
-}
-
-.login-panel::before {
-    content: 'FamilySync';
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #007acc;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 4px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-}
-
-.login-panel:hover {
-    border-color: #007acc;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-}
-
-.login-panel label {
-    color: #cccccc;
-    font-weight: 400;
-    margin-bottom: 4px;
-    align-self: flex-start;
-    width: 100%;
-    font-size: 0.9rem;
-}
-
-.login-panel input[type="text"],
-.login-panel input[type="password"] {
-    width: 100%;
-    padding: 8px 12px;
-    background: #1e1e1e;
-    border: 1px solid #3e3e42;
-    border-radius: 4px;
-    color: #cccccc;
-    font-size: 0.9rem;
-    transition: all 0.2s ease;
-    margin-bottom: 4px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.login-panel input[type="text"]::placeholder,
-.login-panel input[type="password"]::placeholder {
-    color: #6a6a6a;
-}
-
-.login-panel input[type="text"]:focus,
-.login-panel input[type="password"]:focus {
-    outline: none;
-    border-color: #007acc;
-    background: #1e1e1e;
-    box-shadow: 0 0 0 1px #007acc;
-}
-
-.login-button {
-    background: #007acc;
-    border: 1px solid #007acc;
-    color: white;
-    padding: 10px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 400;
-    transition: all 0.2s ease;
-    box-shadow: none;
-    width: 100%;
-    margin-top: 8px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.login-button::before {
-    display: none;
-}
-
-.login-button:hover {
-    background: #005a9e;
-    border-color: #005a9e;
-}
-
-.login-button:active {
-    background: #004578;
-}
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -269,13 +245,13 @@ body {
         font-size: 1rem;
     }
     
-    .login-panel {
+    .login-prompt {
         width: 320px;
         padding: 24px;
         gap: 16px;
     }
     
-    .login-panel::before {
+    .login-prompt::before {
         font-size: 1rem;
         padding: 6px 12px;
         top: -10px;
@@ -297,20 +273,20 @@ body {
         padding: 16px;
     }
     
-    .login-panel {
+    .login-prompt {
         width: 280px;
         padding: 20px;
         margin: 16px;
     }
     
-    .login-panel::before {
+    .login-prompt::before {
         font-size: 0.9rem;
         padding: 4px 10px;
         top: -8px;
     }
     
-    .login-panel input[type="text"],
-    .login-panel input[type="password"] {
+    .login-prompt input[type="text"],
+    .login-prompt input[type="password"] {
         padding: 8px 10px;
         font-size: 0.85rem;
     }
