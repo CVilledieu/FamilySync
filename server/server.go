@@ -17,8 +17,8 @@ func Run() {
 	//db = InitConnection()
 
 	// Serve static files for authenticated users (from ./app/private)
-	e.Use(serve_Public_Static())
 	e.Use(serve_Authenticated_Static())
+	e.Use(serve_Public_Static())
 
 	e.GET("/", newRequest)
 
@@ -33,16 +33,31 @@ func newRequest(c echo.Context) error {
 }
 
 func apiHandler(c echo.Context) error {
-	return c.String(http.StatusOK, "API is working")
+	params := c.QueryParams()
+	u := params.Get("username")
+	p := params.Get("password")
+
+	if u == "admin" && p == "password" {
+		return c.JSON(http.StatusOK, map[string]string{
+			"status":  "success",
+			"token":   "authenticated_user_token",
+			"message": "Login successful",
+		})
+	}
+
+	return c.JSON(http.StatusUnauthorized, map[string]string{
+		"status":  "error",
+		"message": "Invalid credentials",
+	})
 }
 
-// File serving based on authentication
 func serve_Public_Static() echo.MiddlewareFunc {
 	return middleware.StaticWithConfig(middleware.StaticConfig{
 		Root: "./app/public",
 	})
 }
 func serve_Authenticated_Static() echo.MiddlewareFunc {
+
 	return middleware.StaticWithConfig(middleware.StaticConfig{
 		Root: "./app/private",
 		Skipper: func(c echo.Context) bool {

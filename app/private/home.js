@@ -1,18 +1,16 @@
-
 export class HomeWidget {
     constructor(appCtx){
         this.AppCtx = appCtx;
         this.FrameRoot = appCtx.frameRoot;
         this.Name = 'Home';
-    
     }
 
-    render(){
+    Render(){
         const widgetDiv = document.createElement('div');
         widgetDiv.classList.add('widget-home');
         
         const fragment = document.createDocumentFragment();
-        const widgets = this.AppCtx.widgetList;
+        const widgets = this.AppCtx.WidgetList;
         widgets.forEach( widget =>{
             const div = document.createElement('div');
             div.classList.add('dashboard-item');
@@ -20,6 +18,7 @@ export class HomeWidget {
             div.onclick = () => this.AppCtx.loadWidget(widget);
             fragment.appendChild(div);
         });
+        
 
         widgetDiv.appendChild(fragment);
         return widgetDiv;

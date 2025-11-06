@@ -20,7 +20,7 @@ export class CalendarWidget{
         this.State.updateCalendarDays();
     }
 
-    async render(){
+    async Render(){
         const menu = this.menuObj.render();
         this.element.appendChild(menu);
         const calendar = this.calendarObj.render();

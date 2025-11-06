@@ -4,6 +4,7 @@ class app{
         this.FrameRoot = document.createElement('div');
         this.WidgetList = [];
         this.HomeWidget = null;
+        this.logout = null;
         this._server = null;
 
         this.#init();
@@ -12,11 +13,11 @@ class app{
         this.#constructSite();
         this._server = new Server();
         this.tokenCheck = false; //Temp forced failure
+        this.logout = new LogoutWidget(this)
         if (this.tokenCheck) {
 
         } else {
-            const widget =  new loginWidget(this);
-            this.loadWidget(widget);
+            this.loadWidget(this.logout);
         }
     }
 
@@ -39,6 +40,10 @@ class app{
         this.FrameRoot.innerHTML = '';
     }
 
+    getAuthToken(){
+        return this._server ? this._server.token : null;
+    }
+
     async loadWidget(Widget){
         this.clearFrame();
         try {
@@ -49,9 +54,25 @@ class app{
         }
     }
 
+    //Later should be able to send a json response from the server containing app paths and number of apps
+    async buildApp(){
+        this.WidgetList = [];
+        const { HomeWidget } = await import(`/home.js?token=${this._server.token}`);
+        this.HomeWidget = new HomeWidget(this);
+        const { CalendarWidget} = await import(`/calendar.js?token=${this._server.token}`);
+        this.WidgetList.push(new CalendarWidget(this));
+        this.WidgetList.push(this.logout);
+        this.returnHome();
+    }
+
+
+    returnHome(){
+        this.loadWidget(this.HomeWidget);
+    }
+
 }
 
-class loginWidget {
+export class LogoutWidget {
     constructor(app){
         this.Name = "Logout";
         this.element = document.createElement('div');
@@ -98,7 +119,7 @@ class loginWidget {
         const loginButton = document.createElement('button');
         loginButton.classList.add('login-button');
         loginButton.textContent = 'Login';
-        loginButton.addEventListener('click', async () => await this.loginBtn({
+        loginButton.addEventListener('click', async () => await this.login({
             username: usernameInput.value, 
             password: passwordInput.value
         }));
@@ -107,19 +128,39 @@ class loginWidget {
         return prompt;
     }
 
-    async loginBtn(parameters){
+    async login(params){
+        const param = new URLSearchParams(params);
+        const address = '/login';
         try {
-            const res = await this.app._server.manualLogin(parameters.username, parameters.password);
-            if (res && res.ok) {
-                console.log("Login successful");
-                const { HomeWidget } = await import('./widgets/Home.js');
-                this.app.HomeWidget = new HomeWidget(this.app);
-                this.app.loadWidget(this.app.HomeWidget);
+            const fetchUrl = `${address}?${param}`;
+            const res = await fetch(fetchUrl);
+            
+            if (!res.ok) {
+                throw new Error('Network response was not ok');
             }
+            
+            const data = await res.json();
+            
+            if (data.status === 'success' && data.token) {
+                // Store the token for future requests
+                this.app._server.token = data.token;
+                console.log('Login successful, token stored');
+                
+                this.app.buildApp();
+                // Now try to load the home widget with the token
+                const {HomeWidget} = await import(`/home.js?token=${data.token}`);
+                this.app.loadWidget(new HomeWidget(this.app));
+            } else {
+                console.error('Login failed:', data.message);
+                
+            }
+
         } catch (error) {
-            console.error("Login failed:", error);
+            console.error('Request failed:', error);
         }
+        
     }
+
 }
 
 class Server {
@@ -153,15 +194,17 @@ class Server {
     async sendRequest(params, address){
         try {
             const fetchUrl = `${address}?${params.toString()}`;
-            await fetch(fetchUrl).then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response;
-            });
+            const response = await fetch(fetchUrl);
+            
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            
+            return response;
 
         } catch (error) {
             console.error('Request failed:', error);
+            throw error;
         }
     }
 }
