@@ -9,7 +9,16 @@ import (
 
 const INDEX_PATH string = "./app/public/views/*.html"
 
+var DEV_WIDGETS = []map[string]string{
+	{"name": "Home", "path": "./"},
+	{"name": "Calendar", "path": "./"},
+}
+
+var WIDGETS = []map[string]string{}
+
 func Run() {
+	setGlobals("DEV")
+
 	e := echo.New()
 	e.Renderer = newTemplate(INDEX_PATH)
 
@@ -38,10 +47,11 @@ func apiHandler(c echo.Context) error {
 	p := params.Get("password")
 
 	if u == "admin" && p == "password" {
-		return c.JSON(http.StatusOK, map[string]string{
+		return c.JSON(http.StatusOK, map[string]interface{}{
 			"status":  "success",
 			"token":   "authenticated_user_token",
 			"message": "Login successful",
+			"widgets": WIDGETS,
 		})
 	}
 
@@ -64,4 +74,12 @@ func serve_Authenticated_Static() echo.MiddlewareFunc {
 			return !isAuthenticated(c)
 		},
 	})
+}
+
+func setGlobals(state string) {
+	if state == "PROD" {
+
+	} else {
+		WIDGETS = DEV_WIDGETS
+	}
 }

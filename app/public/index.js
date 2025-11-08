@@ -55,8 +55,9 @@ class app{
     }
 
     //Later should be able to send a json response from the server containing app paths and number of apps
-    async buildApp(){
+    async buildApp(responseData){
         this.WidgetList = [];
+        const responseList = responseData.widgets;
         const { HomeWidget } = await import(`/home.js?token=${this._server.token}`);
         this.HomeWidget = new HomeWidget(this);
         const { CalendarWidget} = await import(`/calendar.js?token=${this._server.token}`);
@@ -146,7 +147,7 @@ export class LogoutWidget {
                 this.app._server.token = data.token;
                 console.log('Login successful, token stored');
                 
-                this.app.buildApp();
+                this.app.buildApp(data);
                 // Now try to load the home widget with the token
                 const {HomeWidget} = await import(`/home.js?token=${data.token}`);
                 this.app.loadWidget(new HomeWidget(this.app));
