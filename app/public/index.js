@@ -70,7 +70,6 @@ class app{
     returnHome(){
         this.loadWidget(this.HomeWidget);
     }
-
 }
 
 export class LogoutWidget {
