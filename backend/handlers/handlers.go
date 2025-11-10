@@ -8,13 +8,12 @@ import (
 )
 
 type HandleCtx struct {
-	conn data.Connection
-	path string
+	Conn *data.Connection
 }
 
-func InitHandlerCtx() *HandleCtx {
-	c := data.Init()
-	return &HandleCtx{conn: c}
+func InitCtx(salt int) *HandleCtx {
+	data := data.InitConn(salt)
+	return &HandleCtx{Conn: data}
 }
 
 func (h *HandleCtx) Home(c echo.Context) error {
@@ -23,10 +22,13 @@ func (h *HandleCtx) Home(c echo.Context) error {
 
 func (h *HandleCtx) Login(c echo.Context) error {
 	params := c.QueryParams()
+	username := params.Get("username")
+	password := params.Get("password")
+
+	authenticated := h.Conn.ValidateUser(username, password)
 	if authenticated {
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"status":  "success",
-			"token":   "authenticated_user_token",
 			"message": "Login successful",
 		})
 	}
@@ -36,3 +38,36 @@ func (h *HandleCtx) Login(c echo.Context) error {
 		"message": "Invalid credentials",
 	})
 }
+
+func formatResponse(status, message string, respData map[string]interface{}) map[string]interface{} {
+
+	response := map[string]interface{}{
+		"status":  status,
+		"message": message,
+	}
+	if respData != nil {
+
+	}
+	return response
+}
+
+// func authRequest(c echo.Context) error {
+// 	params := c.QueryParams()
+// 	u := params.Get("username")
+// 	p := params.Get("password")
+// 	userdata := Conn.getUserData(u, p)
+
+// 	if userdata != nil {
+
+// 		return c.JSON(http.StatusOK, map[string]interface{}{
+// 			"status":  "success",
+// 			"token":   "authenticated_user_token",
+// 			"message": "Login successful",
+// 		})
+// 	}
+
+// 	return c.JSON(http.StatusUnauthorized, map[string]string{
+// 		"status":  "error",
+// 		"message": "Invalid credentials",
+// 	})
+// }

@@ -1,7 +1,7 @@
 package main
 
 import (
-	server "FamilySync/api/server"
+	server "FamilySync/backend"
 )
 
 func main() {
