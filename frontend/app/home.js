@@ -1,11 +1,18 @@
+import { CalendarWidget } from "/app/calendar.js";
+
 export class HomeWidget {
     constructor(appCtx){
         this.AppCtx = appCtx;
         this.FrameRoot = appCtx.frameRoot;
         this.Name = 'Home';
     }
+    init(){
+        this.AppCtx.WidgetList = [];
+        this.AppCtx.appendChild(new CalendarWidget(this.AppCtx))
+    }
 
     Render(){
+        console.log(this.AppCtx.user);
         const widgetDiv = document.createElement('div');
         widgetDiv.classList.add('widget-home');
         

@@ -11,7 +11,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-const PUBLIC_INDEX string = "./app/public/views/*.html"
+const PUBLIC_INDEX string = "./frontend/views/*.html"
 
 var WIDGETS_NAMES = []map[string]string{
 	{"name": "Home"},
@@ -22,7 +22,7 @@ func Run() {
 	e := echo.New()
 
 	e.Renderer = newTemplate(PUBLIC_INDEX)
-	e.Static("", "/app/public")
+	e.Static("", "/frontend")
 
 	port, salt := getFlagData()
 	hctx := handler.InitCtx(salt)
@@ -37,7 +37,7 @@ func getFlagData() (string, int) {
 	port := flag.String("port", ":6969", "Port the server is listening to")
 	salt := flag.Int("salt", 1, "")
 	flag.Parse()
-	fmt.Printf("Port used %s", *port)
+	fmt.Printf("Port used %s\n", *port)
 	return *port, *salt
 }
 

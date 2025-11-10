@@ -24,12 +24,15 @@ func (h *HandleCtx) Login(c echo.Context) error {
 	params := c.QueryParams()
 	username := params.Get("username")
 	password := params.Get("password")
+	user := h.Conn.GetUser(username, password)
+	if user != nil {
 
-	authenticated := h.Conn.ValidateUser(username, password)
-	if authenticated {
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"status":  "success",
-			"message": "Login successful",
+			"status":    "success",
+			"message":   "Login successful",
+			"user_id":   user.User_ID,
+			"user_name": user.Name,
+			"family_id": user.Family_ID,
 		})
 	}
 
@@ -38,36 +41,3 @@ func (h *HandleCtx) Login(c echo.Context) error {
 		"message": "Invalid credentials",
 	})
 }
-
-func formatResponse(status, message string, respData map[string]interface{}) map[string]interface{} {
-
-	response := map[string]interface{}{
-		"status":  status,
-		"message": message,
-	}
-	if respData != nil {
-
-	}
-	return response
-}
-
-// func authRequest(c echo.Context) error {
-// 	params := c.QueryParams()
-// 	u := params.Get("username")
-// 	p := params.Get("password")
-// 	userdata := Conn.getUserData(u, p)
-
-// 	if userdata != nil {
-
-// 		return c.JSON(http.StatusOK, map[string]interface{}{
-// 			"status":  "success",
-// 			"token":   "authenticated_user_token",
-// 			"message": "Login successful",
-// 		})
-// 	}
-
-// 	return c.JSON(http.StatusUnauthorized, map[string]string{
-// 		"status":  "error",
-// 		"message": "Invalid credentials",
-// 	})
-// }

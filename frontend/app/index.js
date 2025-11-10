@@ -6,6 +6,7 @@ class app{
         this.HomeWidget = null;
         this.logout = null;
         this._server = null;
+        this.user = null;
 
         this.#init();
     }
@@ -57,10 +58,10 @@ class app{
     //Later should be able to send a json response from the server containing app paths and number of apps
     async buildApp(responseData){
         this.WidgetList = [];
-        const responseList = responseData.widgets;
-        const { HomeWidget } = await import(`/home.js?token=${this._server.token}`);
+        this.user = responseData;
+        const { HomeWidget } = await import(`/app/home.js`);
         this.HomeWidget = new HomeWidget(this);
-        const { CalendarWidget} = await import(`/calendar.js?token=${this._server.token}`);
+        const { CalendarWidget} = await import(`/app/calendar.js`);
         this.WidgetList.push(new CalendarWidget(this));
         this.WidgetList.push(this.logout);
         this.returnHome();
@@ -141,15 +142,12 @@ export class LogoutWidget {
             
             const data = await res.json();
             
-            if (data.status === 'success' && data.token) {
+            if (data.status === 'success') {
                 // Store the token for future requests
                 this.app._server.token = data.token;
                 console.log('Login successful, token stored');
                 
                 this.app.buildApp(data);
-                // Now try to load the home widget with the token
-                const {HomeWidget} = await import(`/home.js?token=${data.token}`);
-                this.app.loadWidget(new HomeWidget(this.app));
             } else {
                 console.error('Login failed:', data.message);
                 
