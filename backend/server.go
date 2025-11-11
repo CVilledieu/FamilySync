@@ -28,7 +28,8 @@ func Run() {
 	hctx := handler.InitCtx(salt)
 
 	e.GET("/", hctx.Home)
-	e.GET("/login", hctx.Login)
+
+	e.POST("/login", hctx.Login)
 
 	e.Logger.Fatal(e.Start(port))
 }
