@@ -30,64 +30,58 @@ func InitConn(hashSalt int) *Connection {
 	}
 }
 
-type FamilyData struct {
-	Family_ID int    `json:"family_id"`
-	Name      string `json:"name"`
-	Members   []UserData
+type Credentials struct {
+	User_ID  int    `json:"user_id"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
-type UserData struct {
+type User struct {
 	User_ID   int    `json:"user_id"`
 	Name      string `json:"name"`
 	Family_ID int    `json:"family_id"`
 }
 
-type EventsData struct {
+type Event struct {
 	Event_ID int    `json:"event_id"`
 	Name     string `json:"name"`
-	Start    string `json:"start"`
+	Start    string `json:"start_time"`
 	Duration string `json:"duration"`
 	User_ID  int    `json:"user_id"`
 }
 
-func (c *Connection) ValidateUser(username, password string) bool {
-	var exists bool
-	hashUser := c.hashingFunction(username)
-	hashPass := c.hashingFunction(password)
-	stmt, _ := c.Connection.Prepare("SELECT EXISTS(SELECT 1 FROM users WHERE username=? AND password=?)")
-	defer stmt.Close()
-	err := stmt.QueryRow(hashUser, hashPass).Scan(&exists)
-	return err != nil
-}
 func (c *Connection) hashingFunction(s string) string {
 	//convStr, _ := strconv.Atoi(s)
 	//hashed := convStr + c.Salt
 	return s
 }
 
-func (c *Connection) GetUser(username, password string) *UserData {
-	user := UserData{}
+func (c *Connection) ValidateByUP(username, password string) *User {
+	user := new(User)
 	hashUser := c.hashingFunction(username)
 	hashPass := c.hashingFunction(password)
 
-	stmt, _ := c.Connection.Prepare("SELECT user_id, name, family_id FROM users WHERE username=? AND password=?")
-	defer stmt.Close()
-
-	err := stmt.QueryRow(hashUser, hashPass).Scan(&user.User_ID, &user.Name, &user.Family_ID)
+	stmt, err := c.Connection.Prepare("SELECT user_id, name, family_id FROM users WHERE username=? AND password=?")
 	if err != nil {
-		fmt.Printf("Error caught in Query: %s", err)
+		fmt.Printf("Error preparing statement: %s\n", err)
 		return nil
 	}
-	fmt.Println(user)
-	return &user
+	defer stmt.Close()
+
+	sterr := stmt.QueryRow(hashUser, hashPass).Scan(&user.User_ID, &user.Name, &user.Family_ID)
+	if sterr != nil {
+		fmt.Printf("Error caught in Query: %s", sterr)
+		return nil
+	}
+	return user
 }
 
-func (c *Connection) GetUserFamily(fam_id int) *[]UserData {
-	rtnData := []UserData{}
+func (c *Connection) GetFamilyMembersByFamId(fam_id int) *[]User {
+	rtnData := []User{}
 	stmt, _ := c.Connection.Prepare("SELECT name, user_id FROM users WHERE family_id=?")
 	defer stmt.Close()
 	for {
-		member := UserData{}
+		member := User{}
 		err := stmt.QueryRow(fam_id).Scan(&member.Name, &member.User_ID)
 		if err == nil {
 			break
@@ -97,12 +91,12 @@ func (c *Connection) GetUserFamily(fam_id int) *[]UserData {
 	return &rtnData
 }
 
-func (c *Connection) GetEvents(user_id int) *[]EventsData {
-	rtnData := []EventsData{}
+func (c *Connection) EventsByUserId(user_id int) *[]Event {
+	rtnData := []Event{}
 	st, _ := c.Connection.Prepare("SELECT * FROM events WHERE user_id=?")
 	defer st.Close()
 	for {
-		event := EventsData{}
+		event := Event{}
 		err := st.QueryRow(user_id).Scan(&event)
 		if err == nil {
 			break

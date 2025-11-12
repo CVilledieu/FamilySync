@@ -1,6 +1,6 @@
 export class CalendarWidget{
-    constructor(App){
-        this.AppCtx = App;
+    constructor(appCtx){
+        this.AppCtx = appCtx;
         this.Name = 'Calendar';
         this.element = document.createElement('div');
         this.element.classList.add('widget-calendar');
@@ -21,6 +21,12 @@ export class CalendarWidget{
     }
 
     async Render(){
+        // Clear existing content
+        this.element.innerHTML = '';
+        
+        // Refresh calendar with latest data
+        this.State.updateCalendarDays();
+        
         const menu = this.menuObj.render();
         this.element.appendChild(menu);
         const calendar = this.calendarObj.render();
@@ -43,13 +49,14 @@ export class CalendarWidget{
 
 class stateCtx {
     constructor(AppCtx){
+        this.AppCtx = AppCtx; // Store reference to app context
         this.Today = new Date();
         this.DisplayedDate = new Date();
         this.MonthYearTitle = null;
         this.focus = null;
         this.days = [];
         this.ActiveMenuComponents = [];
-        this.ExitFunc = ()=> {AppCtx.returnHome()};
+        this.ExitFunc = ()=> {AppCtx.ReturnHome()};
         
         // Initialize the month/year title
         this.updateMonthYearTitle();
@@ -126,6 +133,9 @@ class stateCtx {
             if (this.isSameDay(currentDate, this.Today)) {
                 this.days[dayIndex].element.classList.add('today');
             }
+
+            // Add events for this date if available
+            this.addEventsToDay(dayIndex, year, month, date);
             
             dayIndex++;
         }
@@ -140,6 +150,43 @@ class stateCtx {
         }
     }
     
+    addEventsToDay(dayIndex, year, month, date) {
+        // Check if app context and events are available
+        if (!this.AppCtx || !this.AppCtx.events || this.AppCtx.events.length === 0) {
+            return;
+        }
+
+        const currentDate = new Date(year, month, date);
+        const eventsForDay = [];
+
+        // Filter events for this specific date
+        this.AppCtx.events.forEach(event => {
+            if (event && event.date) {
+                // Try to parse the event date (assuming it might be in various formats)
+                let eventDate;
+                if (event.date instanceof Date) {
+                    eventDate = event.date;
+                } else if (typeof event.date === 'string') {
+                    eventDate = new Date(event.date);
+                } else if (typeof event.date === 'number') {
+                    eventDate = new Date(event.date);
+                }
+
+                // Check if the event date matches the current day
+                if (eventDate && this.isSameDay(eventDate, currentDate)) {
+                    // Add the event title/name to display
+                    const eventTitle = event.title || event.name || event.event_name || 'Event';
+                    eventsForDay.push(eventTitle);
+                }
+            }
+        });
+
+        // Add events to the day if any were found
+        if (eventsForDay.length > 0) {
+            this.days[dayIndex].setEvents(eventsForDay);
+        }
+    }
+
     isSameDay(date1, date2) {
         return date1.getFullYear() === date2.getFullYear() &&
                date1.getMonth() === date2.getMonth() &&
@@ -239,8 +286,8 @@ class CalendarObj{
     }
 
     init(){
-        this.buildWeekDayHeader();
-        this.buildCalendarBody()
+        this.element.appendChild(buildWeekDayHeader());
+        this.buildCalendarBody();
     }
     render(){
         this.calendarBody.innerHTML = '';
@@ -251,18 +298,6 @@ class CalendarObj{
         });
         this.calendarBody.appendChild(fragment);
         return this.element;
-    }
-
-    buildWeekDayHeader(){
-        const WeekdayHeader = document.createElement('div');
-        WeekdayHeader.classList.add('calendar-weekday-container');
-        DAYS.forEach(day => {
-            const dayElem = document.createElement('div');
-            dayElem.classList.add('calendar-weekday-header');
-            dayElem.textContent = day;
-            WeekdayHeader.appendChild(dayElem);
-        });
-        this.element.appendChild(WeekdayHeader);
     }
 
     buildCalendarBody(){
@@ -276,6 +311,22 @@ class CalendarObj{
         }
     }
 }
+
+
+
+const buildWeekDayHeader =()=>{
+    const WeekdayHeader = document.createElement('div');
+    WeekdayHeader.classList.add('calendar-weekday-container');
+    DAYS.forEach(day => {
+        const dayElem = document.createElement('div');
+        dayElem.classList.add('calendar-weekday-header');
+        dayElem.textContent = day;
+        WeekdayHeader.appendChild(dayElem);
+    });
+    return WeekdayHeader;
+}
+
+
 
 class Day {
     constructor(){
@@ -299,6 +350,9 @@ class Day {
         this.date.textContent = date;
     }
     setEvents(list){
+        // Clear existing events first
+        this.list.innerHTML = '';
+        
         list.forEach(item =>{
             const div = document.createElement('div');
             div.classList.add('day-list-event');

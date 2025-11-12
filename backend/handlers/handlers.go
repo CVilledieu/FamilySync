@@ -2,42 +2,142 @@ package handlers
 
 import (
 	"FamilySync/backend/data"
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
 
-type HandleCtx struct {
-	Conn *data.Connection
+type Handlers struct {
+	Echo *echo.Echo
+	Event_Group EventGroup
+	User_Group UserGroup
 }
 
-func InitCtx(salt int) *HandleCtx {
+type ResponseBody map[string]interface{}
+type Credentials data.Credentials
+
+type EventGroup Group
+type UserGroup Group
+
+type Group struct {
+	Group  *echo.Group
+	Conn   *data.Connection
+	Routes map[string]Route
+}
+
+type Route struct {
+	Path    string
+	Method  string
+	Handler echo.HandlerFunc
+}
+
+func (g *Group) SetRoutes() {
+	for _, route := range g.Routes {
+		switch route.Method {
+
+		case "GET":
+			g.Group.GET(route.Path, route.Handler)
+		case "POST":
+			g.Group.POST(route.Path, route.Handler)
+
+		}
+
+	}
+}
+
+func InitCtx(salt int) *Handlers {
 	data := data.InitConn(salt)
-	return &HandleCtx{Conn: data}
+	ctx := new(Handlers)
+
+	//Source of truth
+	ROUTES := map[string]Route{
+		//Get requests
+		"EventsByUserId":   {"/events/user/:id", "GET", ctx.GetEvents},
+		"BaseDataByUserId": {"/base/:id", "GET", ctx.GetBaseData},
+
+		//Post requests
+		"Login": {"/login", "POST", ctx.Login},
+		"NewEvent":{"/events/new/user/:id","POST",ctx.PostEvent}
+	}
+
+	NON_PUBLIC_ROUTES := map[string]Route{
+		"Admin": {"/admin/access", "GET", nil},
+	}
+
+	ctx.Conn = data
+	ctx.Routes = ROUTES
+	ctx.NON_PUBLIC_ROUTES = NON_PUBLIC_ROUTES
+	return ctx
 }
 
-func (h *HandleCtx) Home(c echo.Context) error {
+func (h *Handlers) GetPublicRoutes() map[string]string {
+	routes := make(map[string]string)
+	for name, route := range h.Routes {
+		routes[name] = route.Path
+	}
+	return routes
+}
+
+
+func (h *Handlers) Home(c echo.Context) error {
 	return c.Render(http.StatusOK, "index", nil)
 }
 
-func (h *HandleCtx) Login(c echo.Context) error {
-	params := c.QueryParams()
-	username := params.Get("username")
-	password := params.Get("password")
-	user := h.Conn.GetUser(username, password)
-	if user != nil {
-
-		return c.JSON(http.StatusOK, map[string]interface{}{
-			"status":    "success",
-			"message":   "Login successful",
-			"user_id":   user.User_ID,
-			"user_name": user.Name,
-			"family_id": user.Family_ID,
-		})
+func (h *Handlers) Login(c echo.Context) error {
+	credentials := new(Credentials)
+	err := c.Bind(credentials)
+	if err != nil {
+		return err
 	}
 
-	return c.JSON(http.StatusUnauthorized, map[string]string{
-		"status":  "error",
-		"message": "Invalid credentials",
+	user := h.Conn.ValidateByUP(credentials.Username, credentials.Password)
+	if user == nil {
+		return c.JSON(http.StatusUnauthorized, ResponseBody{
+			"status":  "error",
+			"message": "Invalid credentials",
+		})
+	}
+	return c.JSON(http.StatusOK, ResponseBody{
+		"status":  "success",
+		"message": "Login successful",
+		"user":    user,
+		"routes":  h.GetPublicRoutes(),
 	})
+}
+
+func (h *Handlers) GetBaseData(c echo.Context) error {
+	userId := c.Param("user_id")
+	famId := c.Param("family_id")
+	uId, _ := strconv.Atoi(userId)
+	fId, _ := strconv.Atoi(famId)
+	events := h.Conn.EventsByUserId(uId)
+	family := h.Conn.GetFamilyMembersByFamId(fId)
+	return c.JSON(http.StatusOK, ResponseBody{
+		"events": events,
+		"family": family,
+	})
+}
+
+func isAuthenticated(c echo.Context) bool {
+	params := c.QueryParams()
+
+	// Checking for token
+	token := params.Get("token")
+	if token == "authenticated_user_token" {
+		fmt.Println("User authenticated via token")
+		return true
+	}
+
+	// Temp login info during dev
+	u := params.Get("username")
+	p := params.Get("password")
+	if u == "admin" && p == "password" {
+		fmt.Println("User authenticated via credentials")
+		return true
+	}
+
+	fmt.Println("User not authenticated")
+	return false
 }

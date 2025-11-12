@@ -11,7 +11,9 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-const PUBLIC_INDEX string = "./frontend/views/*.html"
+// File Paths
+const FP_INDEX string = "app/dist/index.html"
+const FP_STATIC string = "/app/dist"
 
 var WIDGETS_NAMES = []map[string]string{
 	{"name": "Home"},
@@ -21,15 +23,14 @@ var WIDGETS_NAMES = []map[string]string{
 func Run() {
 	e := echo.New()
 
-	e.Renderer = newTemplate(PUBLIC_INDEX)
-	e.Static("", "/frontend")
+	e.Renderer = newTemplate(FP_INDEX)
+	e.Static("", FP_STATIC)
 
 	port, salt := getFlagData()
 	hctx := handler.InitCtx(salt)
 
-	e.GET("/", hctx.Home)
-
-	e.POST("/login", hctx.Login)
+	hctx.SetAllRoutes(e)
+	e.Group()
 
 	e.Logger.Fatal(e.Start(port))
 }

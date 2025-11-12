@@ -1,18 +1,19 @@
 export class HomeWidget {
     constructor(appCtx){
         this.AppCtx = appCtx;
-        this.FrameRoot = appCtx.frameRoot;
         this.Name = 'Home';
     }
+    
 
     Render(){
-        console.log(this.AppCtx.user);
         const widgetDiv = document.createElement('div');
         widgetDiv.classList.add('widget-home');
         
         const fragment = document.createDocumentFragment();
-        const widgets = this.AppCtx.WidgetList;
-        widgets.forEach( widget =>{
+        Object.values(G_WidgetsList).forEach( widget =>{
+            if (widget.Name == "Home"){
+                return;
+            }
             const div = document.createElement('div');
             div.classList.add('dashboard-item');
             div.textContent = widget.Name;

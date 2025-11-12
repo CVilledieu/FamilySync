@@ -4,6 +4,7 @@ deprecated/
 internal/
 database/
 node_modules/
+app/dist/*
 
 # Files
 .air.toml
