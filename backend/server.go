@@ -1,12 +1,12 @@
 package server
 
 import (
+	"FamilySync/backend/data"
+	"FamilySync/backend/handlers"
 	"flag"
 	"fmt"
 	"io"
 	"text/template"
-
-	handler "FamilySync/backend/handlers"
 
 	"github.com/labstack/echo/v4"
 )
@@ -27,10 +27,10 @@ func Run() {
 	e.Static("", FP_STATIC)
 
 	port, salt := getFlagData()
-	hctx := handler.InitCtx(salt)
-
-	hctx.SetAllRoutes(e)
-	e.Group()
+	h := new(handlers.Handlers)
+	db := data.InitConn(salt)
+	h.Event_Group = handlers.CreateEventGroup(db, e)
+	h.User_Group = handlers.CreateUserGroup(db, e)
 
 	e.Logger.Fatal(e.Start(port))
 }

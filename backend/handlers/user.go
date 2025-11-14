@@ -8,13 +8,17 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+//Group for requests for '/user'
+//This group is for requests that originate from the perspective of a user
+//Example:
+
 func CreateUserGroup(c *data.Connection, e *echo.Echo) *UserGroup {
 	g := new(UserGroup)
 	g.Conn = c
 	g.Routes = map[string]Route{
-		//"User_EventData":   {"/:id/eventlist", "GET", g.EventList},
-		"User_GeneralData": {"/:id/general", "GET", g.GeneralData},
-		"Founding":         {"/:id/Founding", "GET", g.Foundational},
+		//"Event":   {"/:id/eventlist", "GET", g.EventList},
+		"General":  {"/:id/general", "GET", g.GeneralData},
+		"Founding": {"/:id/Founding", "GET", g.Foundational},
 	}
 	g.Group = e.Group("/user")
 	(*Group)(g).SetRoutes()

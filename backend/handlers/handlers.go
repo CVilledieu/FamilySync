@@ -10,13 +10,19 @@ import (
 )
 
 type Handlers struct {
-	Echo *echo.Echo
-	Event_Group EventGroup
-	User_Group UserGroup
+	Echo        *echo.Echo
+	Event_Group *EventGroup
+	User_Group  *UserGroup
+}
+
+type Manager struct {
+	Echo          *echo.Echo
+	HashSalt      int
+	PublicGroups  []*Group
+	PrivateGroups []*Group
 }
 
 type ResponseBody map[string]interface{}
-type Credentials data.Credentials
 
 type EventGroup Group
 type UserGroup Group
@@ -47,28 +53,32 @@ func (g *Group) SetRoutes() {
 	}
 }
 
+func New(e *echo.Echo) Manager {
+	newManager := Manager{}
+
+	port, salt := getF
+}
+
 func InitCtx(salt int) *Handlers {
 	data := data.InitConn(salt)
 	ctx := new(Handlers)
 
 	//Source of truth
-	ROUTES := map[string]Route{
-		//Get requests
-		"EventsByUserId":   {"/events/user/:id", "GET", ctx.GetEvents},
-		"BaseDataByUserId": {"/base/:id", "GET", ctx.GetBaseData},
+	// ROUTES := map[string]Route{
+	// 	//Get requests
+	// 	"EventsByUserId":   {"/events/user/:id", "GET", ctx.GetEvents},
+	// 	"BaseDataByUserId": {"/base/:id", "GET", ctx.GetBaseData},
 
-		//Post requests
-		"Login": {"/login", "POST", ctx.Login},
-		"NewEvent":{"/events/new/user/:id","POST",ctx.PostEvent}
-	}
+	// 	//Post requests
+	// 	"Login": {"/login", "POST", ctx.Login},
+	// 	"NewEvent":{"/events/new/user/:id","POST",ctx.PostEvent}
+	// }
 
-	NON_PUBLIC_ROUTES := map[string]Route{
-		"Admin": {"/admin/access", "GET", nil},
-	}
+	// NON_PUBLIC_ROUTES := map[string]Route{
+	// 	"Admin": {"/admin/access", "GET", nil},
+	// }
+	ctx.Event_Group = CreateEventGroup()
 
-	ctx.Conn = data
-	ctx.Routes = ROUTES
-	ctx.NON_PUBLIC_ROUTES = NON_PUBLIC_ROUTES
 	return ctx
 }
 
@@ -79,7 +89,6 @@ func (h *Handlers) GetPublicRoutes() map[string]string {
 	}
 	return routes
 }
-
 
 func (h *Handlers) Home(c echo.Context) error {
 	return c.Render(http.StatusOK, "index", nil)

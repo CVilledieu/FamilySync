@@ -8,6 +8,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+//Group for requests for '/events'
+//Requests that originate from the perspective of an event
+//Example: Request to find all events on a date or all users related to an event
+
 func CreateEventGroup(c *data.Connection, e *echo.Echo) *EventGroup {
 	g := new(EventGroup)
 	g.Conn = c
