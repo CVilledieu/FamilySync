@@ -29,8 +29,6 @@ func (g *Group) SetRoutes() {
 
 // API Route Design Pattern:
 // Routes are organized by resource type, following RESTful conventions.
-// - /user/* endpoints handle user-centric operations and data retrieval
-// - /event/* endpoints handle event-centric operations and data retrieval
 type Group struct {
 	Group  *echo.Group
 	Name   string
@@ -48,7 +46,7 @@ func CreateUserGroup(c *Connection) *UserGroup {
 	g.Conn = c
 
 	g.Routes = map[string]Route{
-		"Basic": {"/:id/basic", "GET", g.basic},
+		"Id":    {"/:id", "GET", g.getById},
 		"Login": {"/login", "POST", g.loginByCredentials},
 	}
 	// g.Group = e.Group("/user")
@@ -69,7 +67,7 @@ func (g *UserGroup) loginByCredentials(c echo.Context) error {
 }
 
 // Responds with minimum amount required to use web app
-func (g *UserGroup) basic(c echo.Context) error {
+func (g *UserGroup) getById(c echo.Context) error {
 	user := c.Param("user_id")
 	family := c.Param("family_id")
 	u, _ := strconv.Atoi(user)
