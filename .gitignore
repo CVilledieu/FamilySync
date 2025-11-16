@@ -2,7 +2,6 @@
 tmp/
 deprecated/
 internal/
-database/
 node_modules/
 app/dist/*
 

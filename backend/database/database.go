@@ -1,4 +1,4 @@
-package manager
+package database
 
 import (
 	"crypto/sha256"
@@ -10,10 +10,13 @@ import (
 	_ "github.com/tursodatabase/turso-go"
 )
 
-type Repository interface {
-	GetByID(id int) (*User, error)
-	GetByCredentials(notSecure *Credentials) (*User, error)
-	GetFamilyMembers(familyID int) ([]User, error)
+// Struct to handle calls to the database
+type Database struct {
+	connection *sql.DB
+	salt       string
+	hasher     hash.Hash
+	user       UserRepo
+	event      EventRepo
 }
 
 type Connection struct {
@@ -39,6 +42,10 @@ type Event struct {
 	Start    string `json:"start_time"`
 	Duration string `json:"duration"`
 	User_ID  int    `json:"user_id"`
+}
+
+func New(hashingSalt int) *Database{
+	var Database 
 }
 
 func NewDatabaseConnection(saltingSeed int) *Connection {

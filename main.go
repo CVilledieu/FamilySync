@@ -1,9 +1,11 @@
 package main
 
 import (
-	server "FamilySync/backend"
+	"FamilySync/server"
 )
 
 func main() {
-	server.Run()
+	s := server.New()
+
+	s.Run()
 }

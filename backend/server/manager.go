@@ -1,48 +1,46 @@
-package manager
+package server
 
 import (
 	"flag"
 
+	database "FamilySync/backend/database"
+
 	"github.com/labstack/echo/v4"
 )
 
-type Manager struct {
+type server struct {
 	Echo          *echo.Echo
-	Port          string
-	HashSeed      int
-	DataBase      *Connection
+	Database      *database.Database
 	PublicGroups  []interface{}
 	PrivateGroups []interface{}
 }
 
 type ResponseBody map[string]interface{}
 
-func New() *Manager {
-	var manager Manager
+func New() *server {
+	var manager server
 	e := echo.New()
 
 	manager.Echo = e
-	var hashSeed int
-	manager.Port, hashSeed = getFlagData()
 
-	manager.DataBase = NewDatabaseConnection(hashSeed)
+	port, hashSeed := getFlagData()
+
+	manager.Database = database.New(hashSeed)
+
 	manager.setPublicGroups()
 
+	e.Logger.Fatal(e.Start(port))
 	return &manager
 }
 
-func (m *Manager) setPublicGroups() {
-	userGroup := CreateUserGroup(m.DataBase)
+func (m *server) setPublicGroups() {
+	userGroup := CreateUserGroup(m.Database)
 	userGroup.Group = m.Echo.Group(userGroup.Name)
 	m.PublicGroups = append(m.PublicGroups, userGroup)
 
-	eventGroup := CreateEventGroup(m.DataBase)
+	eventGroup := CreateEventGroup(m.Database)
 	eventGroup.Group = m.Echo.Group(eventGroup.Name)
 	m.PublicGroups = append(m.PublicGroups, eventGroup)
-}
-
-func (m *Manager) Run() {
-	m.Echo.Logger.Fatal(m.Echo.Start(m.Port))
 }
 
 func getFlagData() (string, int) {
